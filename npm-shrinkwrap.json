@@ -1,0 +1,18 @@
+{
+  "name": "slim-cover",
+  "version": "1.0.0",
+  "dependencies": {
+    "falafel-harmony": {
+      "version": "0.3.1",
+      "from": "falafel-harmony@>=0.3.1 <0.4.0",
+      "resolved": "https://registry.npmjs.org/falafel-harmony/-/falafel-harmony-0.3.1.tgz",
+      "dependencies": {
+        "esprima": {
+          "version": "3.1.0",
+          "from": "esprima@>=3.1.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/esprima/-/esprima-3.1.0.tgz"
+        }
+      }
+    }
+  }
+}
