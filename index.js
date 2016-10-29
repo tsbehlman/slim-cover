@@ -73,8 +73,16 @@ function instrumentCode( source, fileName ) {
 				break;
 			}
 			statements[ statementCounter ] = {
-				start: node.range[0] - node.loc.start.column - 1,
-				end: node.range[1],
+				start: {
+					index: node.range[0],
+					line: node.loc.start.line,
+					column: node.loc.start.column
+				},
+				end: {
+					index: node.range[1],
+					line: node.loc.end.line,
+					column: node.loc.end.column
+				},
 				isCovered: false
 			};
 			node.update( `__$statements[${statementCounter}].isCovered = true; ${node.source()}` );
