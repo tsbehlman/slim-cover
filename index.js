@@ -55,6 +55,7 @@ function instrumentCode( source, fileName ) {
 	} );
 	
 	return Falafel( source, {
+		loc: true,
 		range: true
 	}, ( node ) => {
 		switch( node.type ) {
@@ -72,8 +73,8 @@ function instrumentCode( source, fileName ) {
 				break;
 			}
 			statements[ statementCounter ] = {
-				start: node.range[ 0 ],
-				end: node.range[ 1 ],
+				start: node.range[0] - node.loc.start.column - 1,
+				end: node.range[1],
 				isCovered: false
 			};
 			node.update( `__$statements[${statementCounter}].isCovered = true; ${node.source()}` );
