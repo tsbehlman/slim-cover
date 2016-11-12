@@ -1,7 +1,7 @@
 {
   "name": "slim-cover",
   "version": "1.0.0",
-  "description": "Light code coverage tool for JS",
+  "description": "Barebones code coverage for JavaScript, in JavaScript",
   "main": "index.js",
   "author": "Trevor Behlman",
   "license": "MIT",

@@ -1,0 +1,3 @@
+[submodule "lib/line-scanner"]
+	path = lib/line-scanner
+	url = git@github.com:tsbehlman/line-scanner.git
