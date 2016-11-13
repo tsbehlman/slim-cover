@@ -24,6 +24,8 @@ class NumberedShell {
 		this.lineNumberDigits = this.getLineNumberDigits();
 		this.outputStream = outputStream;
 		this.outputStream.write( fileName + "\n" );
+		
+		this.statements.sort( ( a, b ) => a.start.index - b.start.index );
 	}
 	
 	getLineNumberDigits() {
