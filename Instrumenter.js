@@ -66,6 +66,21 @@ function instrumentCode( source, fileName ) {
 				statementCounter++;
 			}
 			break;
+		case "IfStatement":
+		case "WhileStatement":
+		case "DoWhileStatement":
+		case "ForStatement":
+		case "ForInStatement":
+		case "WithStatement":
+			let body = node.consequent !== undefined ? node.consequent : node.body;
+			let alternate = node.alternate;
+			if( alternate && alternate.type !== "BlockStatement" ) {
+				alternate.update( `{${alternate.source()}}` );
+			}
+			if( body.type !== "BlockStatement" ) {
+				body.update( `{${body.source()}}` );
+			}
+			break;
 		}
 	} );
 }
