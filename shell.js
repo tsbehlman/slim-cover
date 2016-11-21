@@ -1,4 +1,4 @@
-let LineScanner = require( "./lib/line-scanner" );
+const LineScanner = require( "./lib/line-scanner" );
 
 const Reset = "\x1b[0m";
 const Invert = "\x1b[7m";

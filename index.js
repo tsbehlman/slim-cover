@@ -1,6 +1,7 @@
-let getCoverage = require( "./core" );
-let printCoverage = require( "./shell" );
+const getCoverage = require( "./core" );
+const printCoverage = require( "./shell" );
 
-getCoverage( "./test.js" )
+getCoverage( "./test.js" );
+getCoverage( "./test2.js" );
 
-printCoverage( getCoverage( "./test2.js" ), process.stdout );
+printCoverage( __$coverage, process.stdout );
