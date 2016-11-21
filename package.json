@@ -6,6 +6,7 @@
   "author": "Trevor Behlman",
   "license": "MIT",
   "dependencies": {
-    "falafel-harmony": "^0.3.1"
+    "falafel-harmony": "^0.3.1",
+    "jasmine": "^2.5.2"
   }
 }
