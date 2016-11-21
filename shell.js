@@ -87,7 +87,9 @@ class NumberedShell {
 			}
 		}
 		
-		formattedLine += line.replace( "\t", "    " );
+		formattedLine += line.replace( /^\t+/g, ( tabs ) => {
+			return "    ".repeat( tabs.length );
+		} );
 		
 		if( numStatements > 0 ) {
 			formattedLine += Reset;
