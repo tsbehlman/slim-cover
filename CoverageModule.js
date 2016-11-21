@@ -1,8 +1,8 @@
-let Module = require( "module" );
-let path = require( "path" );
-let vm = require( "vm" );
-let fs = require( "fs" );
-let instrumentCode = require( "./Instrumenter" );
+const Module = require( "module" );
+const path = require( "path" );
+const vm = require( "vm" );
+const fs = require( "fs" );
+const instrumentCode = require( "./Instrumenter" );
 
 class CoverageModule extends Module {
 	constructor( fileName, parent ) {
@@ -38,6 +38,7 @@ CoverageModule._load = function( fileName, parent ) {
 	if( newModule === undefined ) {
 		newModule = new CoverageModule( fileName, parent );
 		newModule.load( fileName );
+		moduleCache.set( fileName, newModule );
 	}
 	return newModule.exports;
 };
