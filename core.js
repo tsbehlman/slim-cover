@@ -1,11 +1,9 @@
-global.__$coverage = {
-	files: new Map()
-};
+global.__$coverage = new Map();
 
-let requireForCoverage = require( "./CoverageModule" );
+const requireForCoverage = require( "./CoverageModule" );
 
 module.exports = function( fileName ) {
 	requireForCoverage( fileName );
 	
-	return __$coverage.files;
+	return __$coverage;
 }

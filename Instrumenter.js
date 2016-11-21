@@ -1,4 +1,4 @@
-let Falafel = require( "falafel-harmony" );
+const Falafel = require( "falafel-harmony" );
 
 function addNodeToStatements( node, statements ) {
 	statements.push( {
@@ -16,12 +16,12 @@ function addNodeToStatements( node, statements ) {
 	} );
 }
 
-function wrapNodeSource( node, fileName, statementCounter ) {
-	node.update( `(function() {__$coverage.files.get("${fileName}").statements[${statementCounter}].isCovered = true; return ${node.source()};})()` );
+function markStatementAsCovered(fileName, statementIndex) {
+	return `__$coverage.get("${fileName}").statements[${statementIndex}].isCovered = true;`;
 }
 
 function addExpressionToStatements( node, fileName, statements ) {
-	wrapNodeSource( node, fileName, statements.length );
+	node.update( `(function() {${markStatementAsCovered(fileName, statements.length)} return ${node.source()};}).call(this)` );
 	addNodeToStatements( node, statements );
 }
 
@@ -29,11 +29,11 @@ function instrumentCode( source, fileName ) {
 	let statementCounter = 0;
 	let statements = [];
 
-	__$coverage.files.set( fileName, {
+	__$coverage.set( fileName, {
 		source: source,
 		statements: statements
 	} );
-
+	
 	return Falafel( source, {
 		loc: true,
 		range: true
@@ -52,7 +52,7 @@ function instrumentCode( source, fileName ) {
 			if( node.type === "VariableDeclaration" && /For(?:Of|In)Statement/.test( node.parent.type ) ) {
 				break;
 			}
-			node.update( `__$coverage.files.get("${fileName}").statements[${statementCounter}].isCovered = true; ${node.source()}` );
+			node.update( `${markStatementAsCovered(fileName, statementCounter)} ${node.source()}` );
 			addNodeToStatements( node, statements, statementCounter );
 			statementCounter++;
 			break;
