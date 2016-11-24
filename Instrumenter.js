@@ -66,6 +66,12 @@ function instrumentCode( source, fileName ) {
 				statementCounter++;
 			}
 			break;
+		case "ConditionalExpression":
+			addExpressionToStatements( node.consequent, fileName, statements );
+			statementCounter++;
+			addExpressionToStatements( node.alternate, fileName, statements );
+			statementCounter++;
+			break;
 		case "IfStatement":
 		case "WhileStatement":
 		case "DoWhileStatement":
