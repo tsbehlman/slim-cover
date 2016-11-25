@@ -1,4 +1,5 @@
 const LineScanner = require( "./lib/line-scanner" );
+const RingBuffer = require( "../ring-buffer" );
 
 const Reset = "\x1b[0m";
 const Invert = "\x1b[7m";
@@ -16,6 +17,8 @@ function numDigits( num ) {
 	return Math.log10( num + 1 ) + 1 >>> 0;
 }
 
+const PRINT_NEAREST_LINES = 1;
+
 class NumberedShell {
 	constructor( fileName, coverageData, outputStream ) {
 		this.source = coverageData.source;
@@ -24,6 +27,8 @@ class NumberedShell {
 		this.lineNumberDigits = this.getLineNumberDigits();
 		this.outputStream = outputStream;
 		this.outputStream.write( fileName + "\n" );
+		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
+		this.linesToPrint = 0;
 		
 		this.statements.sort( ( a, b ) => a.start.index - b.start.index );
 	}
@@ -34,20 +39,58 @@ class NumberedShell {
 	
 	printLines() {
 		let lineNumber = 1;
-		for( let line of new LineScanner( this.source ) ) {
-			let output = "";
-		
-			output += this.formatLineNumber( lineNumber );
+		for( let lineSource of new LineScanner( this.source ) ) {
+			let line = {
+				source: lineSource,
+				number: lineNumber,
+				coverage: this.getLineCoverage( lineNumber )
+			};
 			
-			output += " ";
-		
-			output += this.formatLine( line, lineNumber );
-		
-			output += "\n";
-		
-			this.outputStream.write( output );
-		
+			this.printOrBufferOutput( line );
+			
 			lineNumber++;
+		}
+	}
+	
+	printOrBufferOutput( line ) {
+		if( this.shouldPrintLine( line.coverage ) ) {
+			while( this.lineBuffer.length > 0 ) {
+				this.printLine( this.lineBuffer.removeFirst() );
+			}
+			
+			this.linesToPrint = PRINT_NEAREST_LINES;
+			
+			this.printLine( line );
+		}
+		else if( this.linesToPrint > 0 ) {
+			this.printLine( line );
+			this.linesToPrint--;
+		}
+		else {
+			if( this.lineBuffer.length === PRINT_NEAREST_LINES ) {
+				this.lineBuffer.removeFirst();
+			}
+			this.lineBuffer.addLast( line );
+		}
+	}
+	
+	printLine( line ) {
+		let output = "";
+		
+		output += this.formatLineNumber( line.number );
+		
+		output += " ";
+		
+		output += this.formatLine( line.source, line.coverage );
+		
+		output += "\n";
+		
+		this.outputStream.write( output );
+	}
+	
+	shouldPrintLine( lineCoverage ) {
+		if( lineCoverage.numCoveredStatements < lineCoverage.numStatements ) {
+			return true;
 		}
 	}
 	
@@ -56,34 +99,20 @@ class NumberedShell {
 		return Invert + " " + numberString + " " + Reset;
 	}
 	
-	formatLine( line, lineNumber ) {
+	formatLine( line, lineCoverage ) {
 		let formattedLine = "";
-		let numStatements = 0;
-		let numCoveredStatements = 0;
 		
-		for( ; this.statementIndex < this.statements.length; this.statementIndex++ ) {
-			let statement = this.statements[ this.statementIndex ];
+		let lineHasStatements = lineCoverage.numStatements > 0;
 		
-			if( statement.start.line !== lineNumber ) {
-				break;
-			}
-		
-			numStatements++;
-		
-			if( statement.isCovered ) {
-				numCoveredStatements++;
-			}
-		}
-		
-		if( numStatements > 0 ) {
-			if( numCoveredStatements === numStatements ) {
+		if( lineHasStatements ) {
+			if( lineCoverage.numCoveredStatements === lineCoverage.numStatements ) {
 				formattedLine += FgGreen;
 			}
-			else if( numCoveredStatements === 0 ) {
-				formattedLine += FgRed;
-			}
-			else {
+			else if( lineCoverage.numCoveredStatements > 0 ) {
 				formattedLine += FgYellow;
+			}
+			else if( lineCoverage.numCoveredStatements === 0 ) {
+				formattedLine += FgRed;
 			}
 		}
 		
@@ -91,11 +120,35 @@ class NumberedShell {
 			return "    ".repeat( tabs.length );
 		} );
 		
-		if( numStatements > 0 ) {
+		if( lineHasStatements ) {
 			formattedLine += Reset;
 		}
 		
 		return formattedLine;
+	}
+	
+	getLineCoverage( lineNumber ) {
+		let numStatements = 0;
+		let numCoveredStatements = 0;
+		
+		for( ; this.statementIndex < this.statements.length; this.statementIndex++ ) {
+			let statement = this.statements[ this.statementIndex ];
+			
+			if( statement.start.line !== lineNumber ) {
+				break;
+			}
+			
+			numStatements++;
+			
+			if( statement.isCovered ) {
+				numCoveredStatements++;
+			}
+		}
+		
+		return {
+			numCoveredStatements: numCoveredStatements,
+			numStatements: numStatements
+		};
 	}
 }
 
