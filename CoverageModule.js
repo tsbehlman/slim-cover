@@ -29,7 +29,11 @@ class CoverageModule extends Module {
 	
 	_compile( content, fileName ) {
 		content = Module.wrap( content );
-		let wrapper = vm.runInThisContext( content );
+		let wrapper = vm.runInThisContext( content, {
+			filename: fileName,
+			lineOffset: 0,
+			displayErrors: true
+		} );
 		return wrapper.call( this.exports, this.exports, CoverageModule.makeRequireFunction( this ), this, fileName, path.dirname( fileName ) );
 	}
 }
