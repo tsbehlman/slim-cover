@@ -17,7 +17,7 @@ function addNodeToStatements( node, statements ) {
 }
 
 function markStatementAsCovered(fileName, statementIndex) {
-	return `__$coverage.get("${fileName}").statements[${statementIndex}].isCovered = true;`;
+	return `__$cover("${fileName}",${statementIndex});`;
 }
 
 function addExpressionToStatements( node, fileName, statements ) {
@@ -39,9 +39,6 @@ function instrumentCode( source, fileName ) {
 		range: true
 	}, ( node ) => {
 		switch( node.type ) {
-		/*case "Program":
-			node.update( `let __$statements = __$coverage.files.get("${fileName}").statements;\n${node.source()}` );
-			break;*/
 		case "ExpressionStatement":
 		case "DebuggerStatement":
 		case "ReturnStatement":
