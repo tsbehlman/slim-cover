@@ -9,12 +9,11 @@ const getCoverage = require( "./core" );
 const printCoverage = require( "./shell" );
 
 let baseDir = path.resolve( process.argv[2] );
-let specDir = path.join( baseDir, "spec/" );
-let configFile = path.join( specDir, "support/jasmine.json" );
+let specDir = baseDir + "/spec";
+let configFile = specDir + "/support/jasmine.json";
 
 let jasmine = new Jasmine( {
-	projectBaseDir: baseDir,
-	specDir: specDir
+	projectBaseDir: baseDir
 } );
 
 jasmine.loadConfigFile( configFile );
