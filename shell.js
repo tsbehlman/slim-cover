@@ -7,8 +7,6 @@ const FgRed = "\x1b[31m";
 const FgYellow = "\x1b[33m";
 const FgGreen = "\x1b[32m";
 
-const LineStyle = "\x1b[47;30m";
-
 function padLeft( pad, str ) {
 	return ( pad + str ).slice( -pad.length );
 }
@@ -24,7 +22,10 @@ class NumberedShell {
 		this.source = coverageData.source;
 		this.statements = coverageData.statements;
 		this.statementIndex = 0;
+		
 		this.lineNumberDigits = this.getLineNumberDigits();
+		this.lineNumberPadding = " ".repeat( this.lineNumberDigits );
+		
 		this.outputStream = outputStream;
 		this.outputStream.write( fileName + "\n" );
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
@@ -95,7 +96,7 @@ class NumberedShell {
 	}
 	
 	formatLineNumber( lineNumber ) {
-		let numberString = padLeft( " ".repeat( this.lineNumberDigits ), lineNumber.toString() );
+		let numberString = padLeft( this.lineNumberPadding, lineNumber.toString() );
 		return Invert + " " + numberString + " " + Reset;
 	}
 	
@@ -116,7 +117,7 @@ class NumberedShell {
 			}
 		}
 		
-		formattedLine += line.replace( /^\t+/g, ( tabs ) => {
+		formattedLine += line.replace( /^\t+/, ( tabs ) => {
 			return "    ".repeat( tabs.length );
 		} );
 		
