@@ -18,7 +18,7 @@ function numDigits( num ) {
 const PRINT_NEAREST_LINES = 1;
 
 class NumberedShell {
-	constructor( fileName, coverageData, outputStream ) {
+	constructor( coverageData, outputStream ) {
 		this.source = coverageData.source;
 		this.statements = coverageData.statements;
 		this.statementIndex = 0;
@@ -27,7 +27,7 @@ class NumberedShell {
 		this.lineNumberPadding = " ".repeat( this.lineNumberDigits );
 		
 		this.outputStream = outputStream;
-		this.outputStream.write( fileName + "\n" );
+		this.outputStream.write( coverageData.name + "\n" );
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
 		this.linesToPrint = 0;
 		
@@ -154,8 +154,8 @@ class NumberedShell {
 }
 
 module.exports = function( files, outputStream ) {
-	for( let entry of files.entries() ) {
-		let shell = new NumberedShell( entry[0], entry[1], outputStream );
+	for( let file of files ) {
+		let shell = new NumberedShell( file, outputStream );
 		shell.printLines();
 	}
 };

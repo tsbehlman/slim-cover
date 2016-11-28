@@ -16,20 +16,22 @@ function addNodeToStatements( node, statements ) {
 	} );
 }
 
-function markStatementAsCovered(fileName, statementIndex) {
-	return `__$cover("${fileName}",${statementIndex});`;
+function markStatementAsCovered(fileIndex, statementIndex) {
+	return `__$cover(${fileIndex},${statementIndex});`;
 }
 
-function addExpressionToStatements( node, fileName, statements ) {
-	node.update( `(function() {${markStatementAsCovered(fileName, statements.length)} return ${node.source()};}).call(this)` );
+function addExpressionToStatements( node, fileIndex, statements ) {
+	node.update( `(function() {${markStatementAsCovered(fileIndex, statements.length)} return ${node.source()};}).call(this)` );
 	addNodeToStatements( node, statements );
 }
 
 function instrumentCode( source, fileName ) {
 	let statementCounter = 0;
 	let statements = [];
+	let fileIndex = __$coverage.length;
 
-	__$coverage.set( fileName, {
+	__$coverage.push( {
+		name: fileName,
 		source: source,
 		statements: statements
 	} );
@@ -49,24 +51,24 @@ function instrumentCode( source, fileName ) {
 			if( node.type === "VariableDeclaration" && /For(?:Of|In)Statement/.test( node.parent.type ) ) {
 				break;
 			}
-			node.update( `${markStatementAsCovered(fileName, statementCounter)} ${node.source()}` );
+			node.update( `${markStatementAsCovered(fileIndex, statementCounter)} ${node.source()}` );
 			addNodeToStatements( node, statements, statementCounter );
 			statementCounter++;
 			break;
 		case "LogicalExpression":
 			if( node.left.type !== "LogicalExpression" ) {
-				addExpressionToStatements( node.left, fileName, statements );
+				addExpressionToStatements( node.left, fileIndex, statements );
 				statementCounter++;
 			}
 			if( node.right.type !== "LogicalExpression" ) {
-				addExpressionToStatements( node.right, fileName, statements );
+				addExpressionToStatements( node.right, fileIndex, statements );
 				statementCounter++;
 			}
 			break;
 		case "ConditionalExpression":
-			addExpressionToStatements( node.consequent, fileName, statements );
+			addExpressionToStatements( node.consequent, fileIndex, statements );
 			statementCounter++;
-			addExpressionToStatements( node.alternate, fileName, statements );
+			addExpressionToStatements( node.alternate, fileIndex, statements );
 			statementCounter++;
 			break;
 		case "IfStatement":

@@ -1,6 +1,6 @@
-global.__$coverage = new Map();
-global.__$cover = function( fileName, statementIndex ) {
-	__$coverage.get( fileName ).statements[ statementIndex ].isCovered = true;
+global.__$coverage = new Array();
+global.__$cover = function( fileIndex, statementIndex ) {
+	__$coverage[ fileIndex ].statements[ statementIndex ].isCovered = true;
 };
 
 const requireForCoverage = require( "./CoverageModule" );
