@@ -21,7 +21,7 @@ function markStatementAsCovered(fileIndex, statementIndex) {
 }
 
 function addExpressionToStatements( node, fileIndex, statements ) {
-	node.update( `(function() {${markStatementAsCovered(fileIndex, statements.length)} return ${node.source()};}).call(this)` );
+	node.update( `(function() {${markStatementAsCovered(fileIndex, statements.length)}return ${node.source()}}).call(this)` );
 	addNodeToStatements( node, statements );
 }
 
@@ -51,7 +51,7 @@ function instrumentCode( source, fileName ) {
 			if( node.type === "VariableDeclaration" && /For(?:Of|In)Statement/.test( node.parent.type ) ) {
 				break;
 			}
-			node.update( `${markStatementAsCovered(fileIndex, statementCounter)} ${node.source()}` );
+			node.update( `${markStatementAsCovered(fileIndex, statementCounter)}${node.source()}` );
 			addNodeToStatements( node, statements, statementCounter );
 			statementCounter++;
 			break;

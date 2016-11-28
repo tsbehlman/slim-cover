@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 if( process.argv.length < 3 ) {
 	console.log( "Specify a project with tests to execute." );
 	return;
@@ -5,8 +7,8 @@ if( process.argv.length < 3 ) {
 
 const path = require( "path" );
 const Jasmine = require( "jasmine" );
-const getCoverage = require( "./core" );
-const printCoverage = require( "./shell" );
+const getCoverage = require( "../core" );
+const printCoverage = require( "../shell" );
 
 let baseDir = path.resolve( process.argv[2] );
 let specDir = baseDir + "/spec";
