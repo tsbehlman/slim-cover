@@ -1,3 +1,6 @@
 [submodule "lib/line-scanner"]
 	path = lib/line-scanner
 	url = git@github.com:tsbehlman/line-scanner.git
+[submodule "lib/ring-buffer"]
+	path = lib/ring-buffer
+	url = git@github.com:tsbehlman/ring-buffer.git
