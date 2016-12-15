@@ -1,14 +1,16 @@
-const Falafel = require( "falafel-harmony" );
+const Acorn = require( "acorn" );
+const Traveler = require( "../lib/traveler" );
+const Transformer = require( "../lib/transformer" );
 
 function addNodeToStatements( node, statements ) {
 	statements.push( {
 		start: {
-			index: node.range[0],
+			index: node.start,
 			line: node.loc.start.line,
 			column: node.loc.start.column
 		},
 		end: {
-			index: node.range[1],
+			index: node.end,
 			line: node.loc.end.line,
 			column: node.loc.end.column
 		},
@@ -20,8 +22,9 @@ function markStatementAsCovered(fileIndex, statementIndex) {
 	return `__$cover(${fileIndex},${statementIndex});`;
 }
 
-function addExpressionToStatements( node, fileIndex, statements ) {
-	node.update( `(function() {${markStatementAsCovered(fileIndex, statements.length)}return ${node.source()}}).call(this)` );
+function addExpressionToStatements( node, fileIndex, statements, transformer ) {
+	transformer.writeAt( `(function(){${markStatementAsCovered(fileIndex, statements.length)}return `, node.start );
+	transformer.writeAt( "}).call(this)", node.end );
 	addNodeToStatements( node, statements );
 }
 
@@ -35,11 +38,14 @@ function instrumentCode( source, fileName ) {
 		source: source,
 		statements: statements
 	} );
-	
-	return Falafel( source, {
-		loc: true,
-		range: true
-	}, ( node ) => {
+
+	let ast = Acorn.parse( source, {
+		locations: true
+	} );
+
+	let transformer = new Transformer( source );
+
+	for( let node of new Traveler( ast ) ) {
 		switch( node.type ) {
 		case "ExpressionStatement":
 		case "DebuggerStatement":
@@ -48,46 +54,51 @@ function instrumentCode( source, fileName ) {
 		case "ContinueStatement":
 		case "ThrowStatement":
 		case "VariableDeclaration":
-			if( node.type === "VariableDeclaration" && /For(?:Of|In)Statement/.test( node.parent.type ) ) {
-				break;
-			}
-			node.update( `${markStatementAsCovered(fileIndex, statementCounter)}${node.source()}` );
+			transformer.writeAt( markStatementAsCovered(fileIndex, statementCounter), node.start );
 			addNodeToStatements( node, statements, statementCounter );
 			statementCounter++;
 			break;
 		case "LogicalExpression":
 			if( node.left.type !== "LogicalExpression" ) {
-				addExpressionToStatements( node.left, fileIndex, statements );
+				addExpressionToStatements( node.left, fileIndex, statements, transformer );
 				statementCounter++;
 			}
 			if( node.right.type !== "LogicalExpression" ) {
-				addExpressionToStatements( node.right, fileIndex, statements );
+				addExpressionToStatements( node.right, fileIndex, statements, transformer );
 				statementCounter++;
 			}
 			break;
 		case "ConditionalExpression":
-			addExpressionToStatements( node.consequent, fileIndex, statements );
+			addExpressionToStatements( node.consequent, fileIndex, statements, transformer );
 			statementCounter++;
-			addExpressionToStatements( node.alternate, fileIndex, statements );
+			addExpressionToStatements( node.alternate, fileIndex, statements, transformer );
 			statementCounter++;
 			break;
+		case "ForInStatement":
+		case "ForOfStatement":
+			if( node.left.type === "VariableDeclaration" ) {
+				node.left.type = "";
+			}
 		case "IfStatement":
 		case "WhileStatement":
 		case "DoWhileStatement":
 		case "ForStatement":
-		case "ForInStatement":
 		case "WithStatement":
 			let body = node.consequent !== undefined ? node.consequent : node.body;
 			let alternate = node.alternate;
 			if( alternate && alternate.type !== "BlockStatement" ) {
-				alternate.update( `{${alternate.source()}}` );
+				transformer.writeAt( "{", alternate.start );
+				transformer.writeAt( "}", alternate.end );
 			}
 			if( body.type !== "BlockStatement" ) {
-				body.update( `{${body.source()}}` );
+				transformer.writeAt( "{", body.start );
+				transformer.writeAt( "}", body.end );
 			}
 			break;
 		}
-	} );
+	}
+
+	return transformer.getSource();
 }
 
 module.exports = instrumentCode;

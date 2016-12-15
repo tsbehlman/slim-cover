@@ -4,3 +4,9 @@
 [submodule "lib/ring-buffer"]
 	path = lib/ring-buffer
 	url = git@github.com:tsbehlman/ring-buffer.git
+[submodule "lib/transformer"]
+	path = lib/transformer
+	url = git@github.com:tsbehlman/transformer.git
+[submodule "lib/traveler"]
+	path = lib/traveler
+	url = git@github.com:tsbehlman/traveler.git

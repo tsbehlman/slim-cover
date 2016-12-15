@@ -30,8 +30,6 @@ class NumberedShell {
 		this.outputStream.write( coverageData.name + "\n" );
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
 		this.linesToPrint = 0;
-		
-		this.statements.sort( ( a, b ) => a.start.index - b.start.index );
 	}
 	
 	getLineNumberDigits() {
