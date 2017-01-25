@@ -15,7 +15,7 @@ function numDigits( num ) {
 	return Math.log10( num + 1 ) + 1 >>> 0;
 }
 
-const PRINT_NEAREST_LINES = 1;
+const PRINT_NEAREST_LINES = 3;
 
 class NumberedShell {
 	constructor( coverageData, outputStream ) {
