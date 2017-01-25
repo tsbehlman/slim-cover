@@ -33,7 +33,7 @@ class NumberedShell {
 	}
 	
 	getLineNumberDigits() {
-		return numDigits( this.statements[this.statements.length - 1].end.line );
+		return numDigits( this.statements[ this.statements.length - 1 ].end.line );
 	}
 	
 	printLines() {
