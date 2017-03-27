@@ -8,5 +8,8 @@
   "dependencies": {
     "acorn": "^4.0.3",
     "jasmine": "^2.5.2"
+  },
+  "bin": {
+	  "slim-cover": "./bin/cover-jasmine.js"
   }
 }
