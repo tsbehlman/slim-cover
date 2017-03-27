@@ -1,6 +1,7 @@
 global.__$coverage = new Array();
 global.__$cover = function( fileIndex, statementIndex ) {
 	__$coverage[ fileIndex ].statements[ statementIndex ].isCovered = true;
+	return true;
 };
 
 const requireForCoverage = require( "./CoverageModule" );

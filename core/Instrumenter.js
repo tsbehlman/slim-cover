@@ -19,12 +19,12 @@ function addNodeToStatements( node, statements ) {
 }
 
 function markStatementAsCovered(fileIndex, statementIndex) {
-	return `__$cover(${fileIndex},${statementIndex});`;
+	return `__$cover(${fileIndex},${statementIndex})`;
 }
 
 function addExpressionToStatements( node, fileIndex, statements, transformer ) {
-	transformer.writeAt( `(function(){${markStatementAsCovered(fileIndex, statements.length)}return `, node.start );
-	transformer.writeAt( "}).call(this)", node.end );
+	transformer.writeAt( `(${markStatementAsCovered(fileIndex, statements.length)}&&(`, node.start );
+	transformer.writeAt( "))", node.end );
 	addNodeToStatements( node, statements );
 }
 
@@ -54,7 +54,7 @@ function instrumentCode( source, fileName ) {
 		case "ContinueStatement":
 		case "ThrowStatement":
 		case "VariableDeclaration":
-			transformer.writeAt( markStatementAsCovered(fileIndex, statementCounter), node.start );
+			transformer.writeAt( markStatementAsCovered(fileIndex, statementCounter) + ";", node.start );
 			addNodeToStatements( node, statements, statementCounter );
 			statementCounter++;
 			break;
