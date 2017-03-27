@@ -97,7 +97,6 @@ function instrumentCode( source, fileName ) {
 		}
 		
 		if( node.type.endsWith( "Covered" ) ) {
-			console.log(node.type);
 			addExpressionToStatements( node, fileIndex, statements, transformer );
 			statementCounter++;
 		}
