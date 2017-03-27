@@ -60,19 +60,15 @@ function instrumentCode( source, fileName ) {
 			break;
 		case "LogicalExpression":
 			if( node.left.type !== "LogicalExpression" ) {
-				addExpressionToStatements( node.left, fileIndex, statements, transformer );
-				statementCounter++;
+				node.left.type += "Covered";
 			}
 			if( node.right.type !== "LogicalExpression" ) {
-				addExpressionToStatements( node.right, fileIndex, statements, transformer );
-				statementCounter++;
+				node.right.type += "Covered";
 			}
 			break;
 		case "ConditionalExpression":
-			addExpressionToStatements( node.consequent, fileIndex, statements, transformer );
-			statementCounter++;
-			addExpressionToStatements( node.alternate, fileIndex, statements, transformer );
-			statementCounter++;
+			node.consequent.type += "Covered";
+			node.alternate.type += "Covered";
 			break;
 		case "ForInStatement":
 		case "ForOfStatement":
@@ -97,8 +93,13 @@ function instrumentCode( source, fileName ) {
 			if( node.type === "ForStatement" && node.init !== null ) {
 				node.init.type = "";
 			}
-			
 			break;
+		}
+		
+		if( node.type.endsWith( "Covered" ) ) {
+			console.log(node.type);
+			addExpressionToStatements( node, fileIndex, statements, transformer );
+			statementCounter++;
 		}
 	}
 
