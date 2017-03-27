@@ -43,8 +43,8 @@ CoverageModule._load = function( fileName, parent ) {
 	let newModule = moduleCache.get( fileName );
 	if( newModule === undefined ) {
 		newModule = new CoverageModule( fileName, parent );
-		newModule.load( fileName );
 		moduleCache.set( fileName, newModule );
+		newModule.load( fileName );
 	}
 	return newModule.exports;
 };
