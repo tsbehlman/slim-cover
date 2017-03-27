@@ -94,6 +94,10 @@ function instrumentCode( source, fileName ) {
 				transformer.writeAt( "{", body.start );
 				transformer.writeAt( "}", body.end );
 			}
+			if( node.type === "ForStatement" && node.init !== null ) {
+				node.init.type = "";
+			}
+			
 			break;
 		}
 	}
