@@ -2,7 +2,7 @@
   "name": "slim-cover",
   "version": "1.0.0",
   "description": "Barebones code coverage for JavaScript, in JavaScript",
-  "main": "index.js",
+  "main": "core/index.js",
   "author": "Trevor Behlman",
   "license": "MIT",
   "dependencies": {
@@ -10,6 +10,14 @@
     "jasmine": "^2.5.2"
   },
   "bin": {
-	  "slim-cover": "./bin/cover-jasmine.js"
-  }
+    "slim-cover": "./bin/cover-jasmine.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsbehlman/slim-cover.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tsbehlman/slim-cover/issues"
+  },
+  "homepage": "https://github.com/tsbehlman/slim-cover#readme"
 }
