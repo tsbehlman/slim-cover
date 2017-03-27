@@ -15,7 +15,7 @@ class CoverageModule extends Module {
 			this.paths = Module._nodeModulePaths(path.dirname(fileName));
 			
 			let content = fs.readFileSync( fileName );
-			if( this.parent !== null ) {
+			if( this.parent !== null && fileName.indexOf("node_modules") === -1 ) {
 				content = instrumentCode( content, fileName );
 			}
 			
