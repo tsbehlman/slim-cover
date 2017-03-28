@@ -214,6 +214,28 @@ describe( "Instrumenter", () => {
 			Code( ")" )
 		);
 	} );
+	
+	it( "supports statements before super() in constructor", () => {
+		verify(
+			Code( "class A{}class B extends A{constructor(){" ),
+			Statement( "let v=1;" ),
+			Statement( "super();" ),
+			Code( "}}" )
+		);
+	} );
+	
+	it( "supports expressions before super() in constructor", () => {
+		verify(
+			Code( "class A{}class B extends A{constructor(){" ),
+			Statement( "let v=true?" ),
+			Expression( "false" ),
+			Code( ":" ),
+			Expression( "true" ),
+			Code( ";" ),
+			Statement( "super();" ),
+			Code( "}}" )
+		);
+	} );
 } );
 
 function Code( code ) {
