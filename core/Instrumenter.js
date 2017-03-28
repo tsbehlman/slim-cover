@@ -2,6 +2,11 @@ const Acorn = require( "acorn" );
 const Traveler = require( "../lib/traveler" );
 const Transformer = require( "../lib/transformer" );
 
+const nestedExpressionTypes = new Set( [
+	"LogicalExpression",
+	"ConditionalExpression"
+] );
+
 function addNodeToStatements( node, statements ) {
 	statements.push( {
 		start: {
@@ -58,40 +63,40 @@ function instrumentCode( source, fileName ) {
 			addNodeToStatements( node, statements, statementCounter );
 			statementCounter++;
 			break;
+		case "IfStatement":
+			normalizeBlockStatement( node.consequent, transformer );
+			normalizeBlockStatement( node.alternate, transformer );
+			break;
+		case "WithStatement":
+		case "WhileStatement":
+		case "DoWhileStatement":
+		case "ForStatement":
+		case "ForInStatement":
+		case "ForOfStatement":
+			normalizeBlockStatement( node.body, transformer );
+			if( node.type === "ForStatement" && node.init !== null ) {
+				node.init.type = "";
+			}
+			else if( node.type === "ForInStatement" || node.type === "ForOfStatement" ) {
+				if( node.left.type === "VariableDeclaration" ) {
+					node.left.type = "";
+				}
+			}
+			break;
 		case "LogicalExpression":
-			if( node.left.type !== "LogicalExpression" ) {
+			if( !nestedExpressionTypes.has( node.left.type ) ) {
 				node.left.type += "Covered";
 			}
-			if( node.right.type !== "LogicalExpression" ) {
+			if( !nestedExpressionTypes.has( node.right.type ) ) {
 				node.right.type += "Covered";
 			}
 			break;
 		case "ConditionalExpression":
-			node.consequent.type += "Covered";
-			node.alternate.type += "Covered";
-			break;
-		case "ForInStatement":
-		case "ForOfStatement":
-			if( node.left.type === "VariableDeclaration" ) {
-				node.left.type = "";
+			if( !nestedExpressionTypes.has( node.consequent.type ) ) {
+				node.consequent.type += "Covered";
 			}
-		case "IfStatement":
-		case "WhileStatement":
-		case "DoWhileStatement":
-		case "ForStatement":
-		case "WithStatement":
-			let body = node.consequent !== undefined ? node.consequent : node.body;
-			let alternate = node.alternate;
-			if( alternate && alternate.type !== "BlockStatement" ) {
-				transformer.writeAt( "{", alternate.start );
-				transformer.writeAt( "}", alternate.end );
-			}
-			if( body.type !== "BlockStatement" ) {
-				transformer.writeAt( "{", body.start );
-				transformer.writeAt( "}", body.end );
-			}
-			if( node.type === "ForStatement" && node.init !== null ) {
-				node.init.type = "";
+			if( !nestedExpressionTypes.has( node.alternate.type ) ) {
+				node.alternate.type += "Covered";
 			}
 			break;
 		}
@@ -103,6 +108,13 @@ function instrumentCode( source, fileName ) {
 	}
 
 	return transformer.getSource();
+}
+
+function normalizeBlockStatement( node, transformer ) {
+	if( node !== null && node.type !== "BlockStatement" ) {
+		transformer.writeAt( "{", node.start );
+		transformer.writeAt( "}", node.end );
+	}
 }
 
 module.exports = instrumentCode;
