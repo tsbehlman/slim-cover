@@ -29,6 +29,7 @@ class NumberedShell {
 		this.output = "";
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
 		this.linesToPrint = 0;
+		this.additionalLinesUncovered = 0;
 	}
 	
 	getLineNumberDigits() {
@@ -94,7 +95,7 @@ class NumberedShell {
 	}
 	
 	shouldOutputLine( lineCoverage ) {
-		if( lineCoverage.numCoveredStatements < lineCoverage.numStatements ) {
+		if( this.additionalLinesUncovered > 0 || lineCoverage.numCoveredStatements < lineCoverage.numStatements ) {
 			return true;
 		}
 	}
@@ -107,9 +108,15 @@ class NumberedShell {
 	formatLine( line, lineCoverage ) {
 		let formattedLine = "";
 		
-		let lineHasStatements = lineCoverage.numStatements > 0;
+		let lineIsColored = false;
 		
-		if( lineHasStatements ) {
+		if( this.additionalLinesUncovered > 0 ) {
+			lineIsColored = true;
+			formattedLine += FgRed;
+			this.additionalLinesUncovered--;
+		}
+		else if( lineCoverage.numStatements > 0 ) {
+			lineIsColored = true;
 			if( lineCoverage.numCoveredStatements === lineCoverage.numStatements ) {
 				formattedLine += FgGreen;
 			}
@@ -125,7 +132,7 @@ class NumberedShell {
 			return "    ".repeat( tabs.length );
 		} );
 		
-		if( lineHasStatements ) {
+		if( lineIsColored ) {
 			formattedLine += Reset;
 		}
 		
@@ -147,6 +154,9 @@ class NumberedShell {
 			
 			if( statement.isCovered ) {
 				numCoveredStatements++;
+			}
+			else if( statement.end.line !== lineNumber ) {
+				this.additionalLinesUncovered += statement.end.line - statement.start.line + 1;
 			}
 		}
 		
