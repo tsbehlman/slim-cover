@@ -18,7 +18,7 @@ function numDigits( num ) {
 const PRINT_NEAREST_LINES = 3;
 
 class NumberedShell {
-	constructor( coverageData, outputStream ) {
+	constructor( coverageData ) {
 		this.source = coverageData.source;
 		this.statements = coverageData.statements;
 		this.statementIndex = 0;
@@ -26,8 +26,7 @@ class NumberedShell {
 		this.lineNumberDigits = this.getLineNumberDigits();
 		this.lineNumberPadding = " ".repeat( this.lineNumberDigits );
 		
-		this.outputStream = outputStream;
-		this.outputStream.write( coverageData.name + "\n" );
+		this.output = "";
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
 		this.linesToPrint = 0;
 	}
@@ -36,8 +35,11 @@ class NumberedShell {
 		return numDigits( this.statements[ this.statements.length - 1 ].end.line );
 	}
 	
-	printLines() {
+	getFormattedCoverageData() {
 		let lineNumber = 1;
+		let totalStatements = 0;
+		let totalCoveredStatements = 0;
+		
 		for( let lineSource of new LineScanner( this.source ) ) {
 			let line = {
 				source: lineSource,
@@ -45,24 +47,32 @@ class NumberedShell {
 				coverage: this.getLineCoverage( lineNumber )
 			};
 			
-			this.printOrBufferOutput( line );
+			this.outputOrBufferLine( line );
 			
 			lineNumber++;
+			totalStatements += line.coverage.numStatements;
+			totalCoveredStatements += line.coverage.numCoveredStatements;
 		}
+		
+		return {
+			formattedSource: this.output,
+			totalStatements: totalStatements,
+			totalCoveredStatements: totalCoveredStatements
+		};
 	}
 	
-	printOrBufferOutput( line ) {
-		if( this.shouldPrintLine( line.coverage ) ) {
+	outputOrBufferLine( line ) {
+		if( this.shouldOutputLine( line.coverage ) ) {
 			while( this.lineBuffer.length > 0 ) {
-				this.printLine( this.lineBuffer.removeFirst() );
+				this.outputLine( this.lineBuffer.removeFirst() );
 			}
 			
 			this.linesToPrint = PRINT_NEAREST_LINES;
 			
-			this.printLine( line );
+			this.outputLine( line );
 		}
 		else if( this.linesToPrint > 0 ) {
-			this.printLine( line );
+			this.outputLine( line );
 			this.linesToPrint--;
 		}
 		else {
@@ -73,21 +83,17 @@ class NumberedShell {
 		}
 	}
 	
-	printLine( line ) {
-		let output = "";
+	outputLine( line ) {
+		this.output += this.formatLineNumber( line.number );
 		
-		output += this.formatLineNumber( line.number );
+		this.output += " ";
 		
-		output += " ";
+		this.output += this.formatLine( line.source, line.coverage );
 		
-		output += this.formatLine( line.source, line.coverage );
-		
-		output += "\n";
-		
-		this.outputStream.write( output );
+		this.output += "\n";
 	}
 	
-	shouldPrintLine( lineCoverage ) {
+	shouldOutputLine( lineCoverage ) {
 		if( lineCoverage.numCoveredStatements < lineCoverage.numStatements ) {
 			return true;
 		}
@@ -152,8 +158,27 @@ class NumberedShell {
 }
 
 module.exports = function( files, outputStream ) {
+	let numStatements = 0;
+	let numCoveredStatements = 0;
+	
 	for( let file of files ) {
 		let shell = new NumberedShell( file, outputStream );
-		shell.printLines();
+		let data = shell.getFormattedCoverageData();
+		
+		if( data.totalCoveredStatements < data.totalStatements ) {
+			outputStream.write( file.name + "\n" );
+			outputStream.write( data.formattedSource );
+		}
+		
+		numStatements += data.totalStatements;
+		numCoveredStatements += data.totalCoveredStatements;
+	}
+	
+	if( numCoveredStatements < numStatements ) {
+		outputStream.write( "\nCovered " + numCoveredStatements.toLocaleString() +
+			" of " + numStatements.toLocaleString() + " statements\n" );
+	}
+	else {
+		outputStream.write( "\nCovered all " + numStatements.toLocaleString() + " statements\n" );
 	}
 };
