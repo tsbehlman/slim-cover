@@ -10,7 +10,7 @@
     "jasmine": "^2.5.2"
   },
   "bin": {
-    "slim-cover": "./bin/cover-jasmine.js"
+    "slim-cover": "./bin/slim-cover.js"
   },
   "repository": {
     "type": "git",
