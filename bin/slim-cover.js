@@ -14,6 +14,10 @@ let runners = [
 	{
 		require: "./cover-jasmine.js",
 		specDir: "spec"
+	},
+	{
+		require: "./cover-mocha.js",
+		specDir: "test"
 	}
 ];
 
