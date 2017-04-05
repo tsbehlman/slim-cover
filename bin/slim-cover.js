@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 
-if( process.argv.length < 3 ) {
-	console.log( "Specify a project with tests to execute." );
-	return;
-}
-
 const path = require( "path" );
 const fs = require( "fs" );
 
-let baseDir = path.resolve( process.argv[2] );
+let baseDir;
+
+if( process.argv.length > 2 ) {
+	baseDir = process.argv[ 2 ];
+}
+else {
+	baseDir = ".";
+}
+
+baseDir = path.resolve( baseDir );
 
 let runners = [
 	{
