@@ -1,5 +1,5 @@
 const Jasmine = require( "jasmine" );
-const getCoverage = require( "../core" );
+const makeRequireForCoverage = require( "../core" );
 const printCoverage = require( "../shell" );
 
 module.exports = function( baseDir, specDir ) {
@@ -11,15 +11,18 @@ module.exports = function( baseDir, specDir ) {
 	
 	jasmine.loadConfigFile( configFile );
 	
+	let coverageData = [];
+	let requireForCoverage = makeRequireForCoverage( null, coverageData );
+	
 	Jasmine.prototype.loadSpecs = function() {
 		for( let specFile of this.specFiles ) {
-			getCoverage( specFile );
+			requireForCoverage( specFile );
 		}
 	};
 	
 	jasmine.onComplete( function( passed ) {
 		if( passed ) {
-			printCoverage( __$coverage, process.stdout );
+			printCoverage( coverageData, process.stdout );
 		}
 	} );
 	

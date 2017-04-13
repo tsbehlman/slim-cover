@@ -5,8 +5,9 @@ const fs = require( "fs" );
 const instrumentCode = require( "./Instrumenter" );
 
 class CoverageModule extends Module {
-	constructor( fileName, parent ) {
+	constructor( fileName, parent, coverageData ) {
 		super( fileName, parent );
+		this.coverageData = coverageData;
 	}
 
 	load( fileName ) {
@@ -16,7 +17,7 @@ class CoverageModule extends Module {
 			
 			let content = fs.readFileSync( fileName );
 			if( this.parent !== null && fileName.indexOf("node_modules") === -1 ) {
-				content = instrumentCode( content, fileName );
+				content = instrumentCode( content, fileName, this.coverageData );
 			}
 			
 			this._compile( content, fileName );
@@ -28,21 +29,29 @@ class CoverageModule extends Module {
 	}
 	
 	_compile( content, fileName ) {
-		content = Module.wrap( content );
+		content = CoverageModule.wrap( content );
 		let wrapper = vm.runInThisContext( content, {
 			filename: fileName,
 			lineOffset: 0,
 			displayErrors: true
 		} );
-		return wrapper.call( this.exports, this.exports, CoverageModule.makeRequireFunction( this ), this, fileName, path.dirname( fileName ) );
+		let require = CoverageModule.makeRequireFunction( this, this.coverageData );
+		return wrapper.call( this.exports, this.exports, require, this, fileName, path.dirname( fileName ), this.coverageData );
 	}
 }
 
-CoverageModule._load = function( fileName, parent ) {
+CoverageModule.wrap = function( content ) {
+	return "(function (exports, require, module, __filename, __dirname, __$coverage) {" +
+		"function __$cover(f,s){return __$coverage[f].statements[s].isCovered=true;}\n" +
+		content +
+		"\n});";
+};
+
+CoverageModule._load = function( fileName, parent, coverageData ) {
 	fileName = Module._resolveFilename( fileName, parent );
 	let newModule = moduleCache.get( fileName );
 	if( newModule === undefined ) {
-		newModule = new CoverageModule( fileName, parent );
+		newModule = new CoverageModule( fileName, parent, coverageData );
 		moduleCache.set( fileName, newModule );
 		newModule.load( fileName );
 	}
@@ -51,10 +60,10 @@ CoverageModule._load = function( fileName, parent ) {
 
 let moduleCache = new Map();
 
-CoverageModule.makeRequireFunction = function( parentModule ) {
+CoverageModule.makeRequireFunction = function( parentModule, coverageData ) {
 	return function( fileName ) {
-		return CoverageModule._load( fileName, parentModule );
+		return CoverageModule._load( fileName, parentModule, coverageData );
 	}
 };
 
-module.exports = CoverageModule.makeRequireFunction( null );
+module.exports = CoverageModule;

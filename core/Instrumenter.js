@@ -33,12 +33,12 @@ function addExpressionToStatements( node, fileIndex, statements, transformer ) {
 	addNodeToStatements( node, statements );
 }
 
-function instrumentCode( source, fileName ) {
+function instrumentCode( source, fileName, coverageData ) {
 	let statementCounter = 0;
 	let statements = [];
-	let fileIndex = __$coverage.length;
+	let fileIndex = coverageData.length;
 
-	__$coverage.push( {
+	coverageData.push( {
 		name: fileName,
 		source: source,
 		statements: statements

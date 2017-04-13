@@ -2,6 +2,7 @@ let instrumentCode = require( "../core/Instrumenter" );
 
 let fileIndex = 0;
 let statementIndex = 0;
+let coverageData = [];
 
 function verify() {
 	let sourceCode = "";
@@ -16,12 +17,12 @@ function verify() {
 		}
 	}
 	
-	let actualInstrumentedCode = instrumentCode( Buffer.from( sourceCode ), "test.js" );
+	let actualInstrumentedCode = instrumentCode( Buffer.from( sourceCode ), "test.js", coverageData );
 	
 	expect( actualInstrumentedCode ).toEqual( jasmine.any( Buffer ) );
 	expect( actualInstrumentedCode.toString() ).toBe( instrumentedCode );
 	
-	let file = __$coverage[ fileIndex ];
+	let file = coverageData[ fileIndex ];
 	
 	expect( file.name ).toBe( "test.js" );
 	expect( file.source ).toEqual( jasmine.any( Buffer ) );
@@ -42,8 +43,9 @@ function verify() {
 
 describe( "Instrumenter", () => {
 	beforeEach( () => {
-		global.__$coverage = [];
+		coverageData = [];
 		fileIndex = 0;
+		statementIndex = 0;
 	} );
 	
 	it( "instruments a variable declaration", () => {
@@ -125,22 +127,6 @@ describe( "Instrumenter", () => {
 	
 	it( "does not instrument variable declaration in for", () => {
 		verify( Code( "for(let i=0;i<10;i++){}" ) );
-	} );
-	
-	it( "adds missing braces to for-of", () => {
-		verify( Code( "for(let i of [])" ), BlockFix() );
-	} );
-	
-	it( "adds missing braces to for-in", () => {
-		verify( Code( "for(let i in [])" ), BlockFix() );
-	} );
-	
-	it( "adds missing braces to for", () => {
-		verify( Code( "for(let i=0;i<10;i++)" ), BlockFix() );
-	} );
-	
-	it( "adds missing braces to with", () => {
-		verify( Code( "with({})" ), BlockFix() );
 	} );
 	
 	it( "instruments both sides of logical statement", () => {
