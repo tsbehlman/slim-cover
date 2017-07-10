@@ -3,16 +3,19 @@
 const path = require( "path" );
 const fs = require( "fs" );
 
-let baseDir;
+let baseDir = ".";
 
 if( process.argv.length > 2 ) {
 	baseDir = process.argv[ 2 ];
 }
-else {
-	baseDir = ".";
-}
 
 baseDir = path.resolve( baseDir );
+
+let coveredPaths = [ baseDir ];
+
+if( process.argv.length > 3 ) {
+	coveredPaths = process.argv.slice( 3 ).map( ( coveredPath ) => path.resolve( coveredPath ) );
+}
 
 let runners = [
 	{
@@ -30,7 +33,7 @@ for( let runner of runners ) {
 	let stats = fs.lstatSync( specDir );
 	
 	if( stats.isDirectory() && hasModule( runner.module ) ) {
-		require( `./cover-${runner.module}.js` )( baseDir, specDir );
+		require( `./cover-${runner.module}.js` )( baseDir, specDir, coveredPaths );
 		break;
 	}
 }

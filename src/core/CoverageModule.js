@@ -5,9 +5,10 @@ const fs = require( "fs" );
 const instrumentCode = require( "./Instrumenter" );
 
 class CoverageModule extends Module {
-	constructor( fileName, parent, coverageData ) {
+	constructor( fileName, parent, coverageData, coveredPaths ) {
 		super( fileName, parent );
 		this.coverageData = coverageData;
+		this.coveredPaths = coveredPaths;
 	}
 
 	load( fileName ) {
@@ -16,7 +17,7 @@ class CoverageModule extends Module {
 			this.paths = Module._nodeModulePaths(path.dirname(fileName));
 			
 			let content = fs.readFileSync( fileName );
-			if( this.parent !== null && fileName.indexOf("node_modules") === -1 ) {
+			if( this.coveredPaths.some( ( coveredPath ) => fileName.startsWith( coveredPath ) ) ) {
 				content = instrumentCode( content, fileName, this.coverageData );
 			}
 			
@@ -35,7 +36,7 @@ class CoverageModule extends Module {
 			lineOffset: 0,
 			displayErrors: true
 		} );
-		let require = CoverageModule.makeRequireFunction( this, this.coverageData );
+		let require = CoverageModule.makeRequireFunction( this, this.coverageData, this.coveredPaths );
 		return wrapper.call( this.exports, this.exports, require, this, fileName, path.dirname( fileName ), this.coverageData );
 	}
 }
@@ -47,11 +48,11 @@ CoverageModule.wrap = function( content ) {
 		"\n});";
 };
 
-CoverageModule._load = function( fileName, parent, coverageData ) {
+CoverageModule._load = function( fileName, parent, coverageData, coveredPaths ) {
 	fileName = Module._resolveFilename( fileName, parent );
 	let newModule = moduleCache.get( fileName );
 	if( newModule === undefined ) {
-		newModule = new CoverageModule( fileName, parent, coverageData );
+		newModule = new CoverageModule( fileName, parent, coverageData, coveredPaths );
 		moduleCache.set( fileName, newModule );
 		newModule.load( fileName );
 	}
@@ -60,9 +61,9 @@ CoverageModule._load = function( fileName, parent, coverageData ) {
 
 let moduleCache = new Map();
 
-CoverageModule.makeRequireFunction = function( parentModule, coverageData ) {
+CoverageModule.makeRequireFunction = function( parentModule, coverageData, coveredPaths ) {
 	return function( fileName ) {
-		return CoverageModule._load( fileName, parentModule, coverageData );
+		return CoverageModule._load( fileName, parentModule, coverageData, coveredPaths );
 	}
 };
 
