@@ -185,10 +185,11 @@ module.exports = function( files, outputStream ) {
 	}
 	
 	if( numCoveredStatements < numStatements ) {
+		let percentage = ( numCoveredStatements * 100 / numStatements ).toFixed( 1 );
 		outputStream.write( "\nCovered " + numCoveredStatements.toLocaleString() +
-			" of " + numStatements.toLocaleString() + " statements\n" );
+			" of " + numStatements.toLocaleString() + " statements (" + percentage + "%)\n" );
 	}
 	else {
-		outputStream.write( "\nCovered all " + numStatements.toLocaleString() + " statements\n" );
+		outputStream.write( "\nCovered all " + numStatements.toLocaleString() + " statements (100%)\n" );
 	}
 };
