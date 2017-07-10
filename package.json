@@ -5,6 +5,10 @@
   "main": "src/core/index.js",
   "author": "Trevor Behlman",
   "license": "MIT",
+  "scripts": {
+    "test": "jasmine",
+    "coverage": "./bin/slim-cover.js . src"
+  },
   "dependencies": {
     "acorn": "^5.0.3"
   },
@@ -18,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/tsbehlman/slim-cover/issues"
   },
-  "homepage": "https://github.com/tsbehlman/slim-cover#readme"
+  "homepage": "https://github.com/tsbehlman/slim-cover#readme",
+  "devDependencies": {
+    "jasmine": "^2.6.0"
+  }
 }
