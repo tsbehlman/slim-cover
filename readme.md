@@ -2,7 +2,17 @@
 
 Barebones code coverage for JavaScript, in JavaScript.
 
-Supports Jasmine and Mocha. Mocha support, however, is highly limited at this stage. It won't read from a Mocha configuration file, for example.
+Currently only supports Jasmine.
 
 ##Usage
-Run `slim-cover` to execute tests and print coverage information.  You may optionally specify the project to cover.  For example, if your Jasmine `spec` folder is in a subdirectory called `src`, run `slim-cover src`.
+Run `slim-cover` to execute tests and print coverage information.
+
+```
+slim-cover <project_dir> [<included_paths>...]
+```
+
+Executes tests within the given project directory.  For example, if your Jasmine `spec` folder is in a subdirectory called `dev`, run `slim-cover dev` to execute those tests.
+
+You may optionally specify any number of files and directories to monitor for coverage.  For example, `slim-cover . src/ index.js` will execute all tests in the current directory and report on code coverage for `index.js` all files under the `src` directory.  The current project directory is included if no paths are specified.
+
+slim-cover will only report on coverage for files that are both within the configured source paths and included by your test code.  If there are source files in your chosen paths that are not imported by either your tests or the code under test, they will not be monitored.
