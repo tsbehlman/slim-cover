@@ -1,6 +1,6 @@
 const Jasmine = require( "jasmine" );
-const makeRequireForCoverage = require( "../core" );
-const printCoverage = require( "../shell" );
+const makeRequireForCoverage = require( "../src/core" );
+const printCoverage = require( "../src/shell" );
 
 module.exports = function( baseDir, specDir ) {
 	let configFile = specDir + "/support/jasmine.json";

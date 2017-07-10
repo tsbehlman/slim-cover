@@ -1,4 +1,4 @@
-let instrumentCode = require( "../core/Instrumenter" );
+let instrumentCode = require( "../src/core/Instrumenter" );
 
 let fileIndex = 0;
 let statementIndex = 0;
