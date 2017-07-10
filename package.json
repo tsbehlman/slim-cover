@@ -10,7 +10,7 @@
     "coverage": "./bin/slim-cover.js . src"
   },
   "dependencies": {
-    "acorn": "^5.0.3"
+    "acorn": "^5.1.1"
   },
   "bin": {
     "slim-cover": "./bin/slim-cover.js"
