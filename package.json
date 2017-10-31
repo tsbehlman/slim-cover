@@ -15,6 +15,10 @@
   "bin": {
     "slim-cover": "./bin/slim-cover.js"
   },
+  "files": [
+    "src",
+    "bin"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tsbehlman/slim-cover.git"
