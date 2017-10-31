@@ -12,21 +12,16 @@ class CoverageModule extends Module {
 	}
 
 	load( fileName ) {
-		if( path.extname( fileName ) === ".js" ) {
-			this.filename = fileName;
-			this.paths = Module._nodeModulePaths(path.dirname(fileName));
-			
-			let content = fs.readFileSync( fileName );
-			if( this.coveredPaths.some( ( coveredPath ) => fileName.startsWith( coveredPath ) ) ) {
-				content = instrumentCode( content, fileName, this.coverageData );
-			}
-			
-			this._compile( content, fileName );
-			this.loaded = true;
+		this.filename = fileName;
+		this.paths = Module._nodeModulePaths(path.dirname(fileName));
+		
+		let content = fs.readFileSync( fileName );
+		if( this.coveredPaths.some( ( coveredPath ) => fileName.startsWith( coveredPath ) ) ) {
+			content = instrumentCode( content, fileName, this.coverageData );
 		}
-		else {
-			super.load( fileName );
-		}
+		
+		this._compile( content, fileName );
+		this.loaded = true;
 	}
 	
 	_compile( content, fileName ) {
@@ -50,13 +45,18 @@ CoverageModule.wrap = function( content ) {
 
 CoverageModule._load = function( fileName, parent, coverageData, coveredPaths ) {
 	fileName = Module._resolveFilename( fileName, parent );
-	let newModule = moduleCache.get( fileName );
-	if( newModule === undefined ) {
-		newModule = new CoverageModule( fileName, parent, coverageData, coveredPaths );
-		moduleCache.set( fileName, newModule );
-		newModule.load( fileName );
+	if( path.extname( fileName ) === ".js" ) {
+		let newModule = moduleCache.get( fileName );
+		if( newModule === undefined ) {
+			newModule = new CoverageModule( fileName, parent, coverageData, coveredPaths );
+			moduleCache.set( fileName, newModule );
+			newModule.load( fileName );
+		}
+		return newModule.exports;
 	}
-	return newModule.exports;
+	else {
+		return Module._load( fileName, parent, false );
+	}
 };
 
 let moduleCache = new Map();
