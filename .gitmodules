@@ -1,12 +1,12 @@
 [submodule "lib/line-scanner"]
 	path = lib/line-scanner
-	url = git@github.com:tsbehlman/line-scanner.git
+	url = https://github.com/tsbehlman/line-scanner.git
 [submodule "lib/ring-buffer"]
 	path = lib/ring-buffer
-	url = git@github.com:tsbehlman/ring-buffer.git
+	url = https://github.com/tsbehlman/ring-buffer.git
 [submodule "lib/transformer"]
 	path = lib/transformer
-	url = git@github.com:tsbehlman/transformer.git
+	url = https://github.com/tsbehlman/transformer.git
 [submodule "lib/traveler"]
 	path = lib/traveler
-	url = git@github.com:tsbehlman/traveler.git
+	url = https://github.com/tsbehlman/traveler.git

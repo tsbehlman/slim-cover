@@ -1,4 +1,5 @@
 #slim-cover
+[![Build Status](https://travis-ci.org/tsbehlman/slim-cover.svg?branch=master)](https://travis-ci.org/tsbehlman/slim-cover)
 
 Barebones code coverage for JavaScript, in JavaScript.
 
