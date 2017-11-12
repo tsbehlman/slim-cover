@@ -21,10 +21,6 @@ let runners = [
 	{
 		module: "jasmine",
 		specDir: "spec"
-	},
-	{
-		module: "mocha",
-		specDir: "test"
 	}
 ];
 
