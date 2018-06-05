@@ -18,14 +18,14 @@ function verify() {
 		}
 	}
 	
-	let actualInstrumentedCode = instrumentCode( Buffer.from( sourceCode ), "test.js", coverageData );
+	let actualInstrumentedCode = instrumentCode( Buffer.from( sourceCode ), `test${fileIndex}.js`, coverageData );
 	
 	expect( actualInstrumentedCode ).toEqual( jasmine.any( Buffer ) );
 	expect( actualInstrumentedCode.toString() ).toBe( instrumentedCode );
 	
 	let file = coverageData[ fileIndex ];
 	
-	expect( file.name ).toBe( "test.js" );
+	expect( file.name ).toBe( `test${fileIndex}.js` );
 	expect( file.source ).toEqual( jasmine.any( Buffer ) );
 	expect( file.source.toString() ).toBe( sourceCode );
 	
@@ -222,6 +222,17 @@ describe( "Instrumenter", () => {
 			Statement( "super();" ),
 			Code( "}}" )
 		);
+	} );
+	
+	it( "considers only unique files", () => {
+		const coverageData = [];
+		instrumentCode( Buffer.from( "" ), "test.js", coverageData );
+		instrumentCode( Buffer.from( "" ), "test2.js", coverageData );
+		instrumentCode( Buffer.from( "" ), "test.js", coverageData );
+		
+		expect( coverageData.length ).toBe( 2 );
+		expect( coverageData[ 0 ].name ).toBe( "test.js" );
+		expect( coverageData[ 1 ].name ).toBe( "test2.js" );
 	} );
 } );
 

@@ -36,13 +36,16 @@ function addExpressionToStatements( node, fileIndex, statements, transformer ) {
 function instrumentCode( source, fileName, coverageData ) {
 	let statementCounter = 0;
 	let statements = [];
-	let fileIndex = coverageData.length;
+	let fileIndex = coverageData.findIndex( file => file.name === fileName );
 
-	coverageData.push( {
-		name: fileName,
-		source: source,
-		statements: statements
-	} );
+	if( fileIndex < 0 ) {
+		fileIndex = coverageData.length;
+		coverageData.push( {
+			name: fileName,
+			source: source,
+			statements: statements
+		} );
+	}
 
 	let ast = Acorn.parse( source, {
 		locations: true
