@@ -1,3 +1,4 @@
+require.cache[ require.resolve( "../src/core/Instrumenter" ) ] = undefined;
 let instrumentCode = require( "../src/core/Instrumenter" );
 
 let fileIndex = 0;

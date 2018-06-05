@@ -118,3 +118,4 @@ function normalizeBlockStatement( node, transformer ) {
 }
 
 module.exports = instrumentCode;
+module.exports.CoverageUtilities = "function __$cover(f,s){return module.coverageData[f].statements[s].isCovered=true;}";

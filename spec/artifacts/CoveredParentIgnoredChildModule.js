@@ -1,1 +1,1 @@
-const ChildModule = require( "./CoveredChildModule.js" );
+const ChildModule = require( "./IgnoredChildModule.js" );

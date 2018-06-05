@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/tsbehlman/slim-cover#readme",
   "devDependencies": {
-    "jasmine": "^2.6.0"
+    "jasmine": "^2.6.0",
+    "mockery": "^2.1.0"
   }
 }
