@@ -1,5 +1,5 @@
-require.cache[ require.resolve( "../src/core" ) ] = undefined;
-const Core = require( "../src/core" );
+require.cache[ require.resolve( "../../src/core" ) ] = undefined;
+const Core = require( "../../src/core" );
 const fs = require( "fs" );
 
 function requireForCoverage( coverageData, coveredPaths, requiredFile ) {

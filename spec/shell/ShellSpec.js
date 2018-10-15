@@ -18,7 +18,7 @@ describe( "Shell", () => {
 		mockery.registerMock( "fs", { accessSync: ( path ) => {} } );
 		mockery.registerMock( "./JasmineCoverage.js", JasmineCoverageSpy );
 		
-		require( "../src/shell" )( ".", [ "." ] );
+		require( "../../src/shell" )( ".", [ "." ] );
 		
 		expect( JasmineCoverageSpy ).toHaveBeenCalledWith( ".", "./spec", [ "." ] );
 	} );
@@ -30,7 +30,7 @@ describe( "Shell", () => {
 		} } );
 		mockery.registerMock( "./JasmineCoverage.js", JasmineCoverageSpy );
 		
-		require( "../src/shell" )( ".", [ "." ] );
+		require( "../../src/shell" )( ".", [ "." ] );
 		
 		expect( JasmineCoverageSpy ).not.toHaveBeenCalled();
 	} );

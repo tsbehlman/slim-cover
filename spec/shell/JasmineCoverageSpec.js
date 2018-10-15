@@ -1,6 +1,6 @@
 const mockery = require( "mockery" );
 
-const JasmineCoveragePath = require.resolve( "../src/shell/JasmineCoverage.js" );
+const JasmineCoveragePath = require.resolve( "../../src/shell/JasmineCoverage.js" );
 
 describe( "JasmineCoverage", () => {	
 	let jasmineArguments;
