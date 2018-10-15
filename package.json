@@ -10,7 +10,11 @@
     "coverage": "./bin/slim-cover.js . src"
   },
   "dependencies": {
-    "acorn": "^6.0.2"
+    "acorn": "^6.0.2",
+    "line-scanner": "tsbehlman/line-scanner",
+    "ring-buffer": "tsbehlman/ring-buffer",
+    "transformer": "tsbehlman/transformer",
+    "traveler": "tsbehlman/traveler"
   },
   "bin": {
     "slim-cover": "./bin/slim-cover.js"

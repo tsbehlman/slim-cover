@@ -1,6 +1,6 @@
 const Acorn = require( "acorn" );
-const Traveler = require( "../../lib/traveler" );
-const Transformer = require( "../../lib/transformer" );
+const Traveler = require( "traveler" );
+const Transformer = require( "transformer" );
 
 const nestedExpressionTypes = new Set( [
 	"LogicalExpression",

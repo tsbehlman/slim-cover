@@ -1,5 +1,5 @@
-const LineScanner = require( "../../lib/line-scanner" );
-const RingBuffer = require( "../../lib/ring-buffer" );
+const LineScanner = require( "line-scanner" );
+const RingBuffer = require( "ring-buffer" );
 
 const Reset = "\x1b[0m";
 const Invert = "\x1b[7m";
