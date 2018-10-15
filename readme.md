@@ -1,6 +1,6 @@
 # slim-cover
 
-[![Build Status](https://travis-ci.org/tsbehlman/slim-cover.svg?branch=master)](https://travis-ci.org/tsbehlman/slim-cover) ![Minified size](https://img.shields.io/bundlephobia/min/slim-cover.svg)
+[![Build Status](https://travis-ci.org/tsbehlman/slim-cover.svg?branch=master)](https://travis-ci.org/tsbehlman/slim-cover) [![Minified size](https://img.shields.io/bundlephobia/min/slim-cover.svg)](https://bundlephobia.com/result?p=slim-cover)
 
 Barebones code coverage for JavaScript, in JavaScript.
 
