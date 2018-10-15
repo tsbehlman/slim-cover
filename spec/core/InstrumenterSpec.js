@@ -18,16 +18,14 @@ function verify() {
 		}
 	}
 	
-	let actualInstrumentedCode = instrumentCode( Buffer.from( sourceCode ), `test${fileIndex}.js`, coverageData );
+	let actualInstrumentedCode = instrumentCode( sourceCode, `test${fileIndex}.js`, coverageData );
 	
-	expect( actualInstrumentedCode ).toEqual( jasmine.any( Buffer ) );
-	expect( actualInstrumentedCode.toString() ).toBe( instrumentedCode );
+	expect( actualInstrumentedCode ).toBe( instrumentedCode );
 	
 	let file = coverageData[ fileIndex ];
 	
 	expect( file.name ).toBe( `test${fileIndex}.js` );
-	expect( file.source ).toEqual( jasmine.any( Buffer ) );
-	expect( file.source.toString() ).toBe( sourceCode );
+	expect( file.source ).toBe( sourceCode );
 	
 	let statements = file.statements;
 	
@@ -54,7 +52,18 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments two variable declarations", () => {
-		verify( Statement( "var test1 = 1;" ), Statement( "var test2 = 2;" ) );
+		verify(
+			Statement( "var test1 = 1;" ),
+			Statement( "var test2 = 2;" )
+		);
+	} );
+	
+	it( "instruments two variable declarations with UTF-8 characters in between", () => {
+		verify(
+			Statement( "var test1 = 1;" ),
+			Code( "/* ﬁ∞• */" ),
+			Statement( "var test2 = 2;" )
+		);
 	} );
 	
 	it( "instruments a variable declaration in each of two files", () => {
@@ -226,9 +235,9 @@ describe( "Instrumenter", () => {
 	
 	it( "considers only unique files", () => {
 		const coverageData = [];
-		instrumentCode( Buffer.from( "" ), "test.js", coverageData );
-		instrumentCode( Buffer.from( "" ), "test2.js", coverageData );
-		instrumentCode( Buffer.from( "" ), "test.js", coverageData );
+		instrumentCode( "", "test.js", coverageData );
+		instrumentCode( "", "test2.js", coverageData );
+		instrumentCode( "", "test.js", coverageData );
 		
 		expect( coverageData.length ).toBe( 2 );
 		expect( coverageData[ 0 ].name ).toBe( "test.js" );
