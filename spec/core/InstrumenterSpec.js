@@ -1,44 +1,9 @@
 require.cache[ require.resolve( "../../src/core/Instrumenter" ) ] = undefined;
-let instrumentCode = require( "../../src/core/Instrumenter" );
+const instrumentCode = require( "../../src/core/Instrumenter" );
 
 let fileIndex = 0;
 let statementIndex = 0;
 let coverageData = [];
-
-function verify() {
-	let sourceCode = "";
-	let instrumentedCode = "";
-	let numStatements = 0;
-	
-	for( let statement of arguments ) {
-		sourceCode += statement.sourceCode;
-		instrumentedCode += statement.instrumentedCode;
-		if( statement.isCoverable ) {
-			numStatements++;
-		}
-	}
-	
-	let actualInstrumentedCode = instrumentCode( sourceCode, `test${fileIndex}.js`, coverageData );
-	
-	expect( actualInstrumentedCode ).toBe( instrumentedCode );
-	
-	let file = coverageData[ fileIndex ];
-	
-	expect( file.name ).toBe( `test${fileIndex}.js` );
-	expect( file.source ).toBe( sourceCode );
-	
-	let statements = file.statements;
-	
-	expect( file.statements ).toEqual( jasmine.any( Array ) );
-	expect( statements.length ).toBe( numStatements );
-	
-	for( let i = 1; i < statements.length; i++ ) {
-		expect( statements[ i - 1 ].start.index ).not.toBeGreaterThan( statements[ i ].start.index );
-	}
-	
-	fileIndex++;
-	statementIndex = 0;
-}
 
 describe( "Instrumenter", () => {
 	beforeEach( () => {
@@ -48,18 +13,18 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments a variable declaration", () => {
-		verify( Statement( "var test1 = 1;" ) );
+		verifyStatements( "test1", Statement( "var test1 = 1;" ) );
 	} );
 	
 	it( "instruments two variable declarations", () => {
-		verify(
+		verifyStatements( "[ test1, test2 ]",
 			Statement( "var test1 = 1;" ),
 			Statement( "var test2 = 2;" )
 		);
 	} );
 	
 	it( "instruments two variable declarations with UTF-8 characters in between", () => {
-		verify(
+		verifyStatements( "[ test1, test2 ]",
 			Statement( "var test1 = 1;" ),
 			Code( "/* ﬁ∞• */" ),
 			Statement( "var test2 = 2;" )
@@ -67,12 +32,12 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments a variable declaration in each of two files", () => {
-		verify( Statement( "var test1 = 1;" ) );
-		verify( Statement( "var test2 = 2;" ) );
+		verifyStatements( "test1", Statement( "var test1 = 1;" ) );
+		verifyStatements( "test2", Statement( "var test2 = 2;" ) );
 	} );
 	
 	it( "instruments an expression statement", () => {
-		verify( Statement( "1;" ) );
+		verifyExpression( Statement( "1;" ) );
 	} );
 	
 	it( "instruments a debugger statement", () => {
@@ -83,7 +48,7 @@ describe( "Instrumenter", () => {
 		verify( Statement( "throw '';" ) );
 	} );
 	
-	it( "does not instrument a funciton declaration", () => {
+	it( "does not instrument a function declaration", () => {
 		verify( Code( "function test1(){}" ) );
 	} );
 	
@@ -140,11 +105,11 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments both sides of logical statement", () => {
-		verify( Instrumentation(), Expression( "true" ), Code( "&&" ), Expression( "false" ) );
+		verifyExpression( Instrumentation(), Expression( "true" ), Code( "&&" ), Expression( "false" ) );
 	} );
 	
 	it( "instruments nested logical statements", () => {
-		verify(
+		verifyExpression(
 			Instrumentation(),
 			Expression( "true" ),
 			Code( "||" ),
@@ -157,11 +122,11 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments both sides of conditional statement", () => {
-		verify( Instrumentation(), Code( "true?" ), Expression( "false" ), Code( ":" ), Expression( "true" ) );
+		verifyExpression( Instrumentation(), Code( "true?" ), Expression( "false" ), Code( ":" ), Expression( "true" ) );
 	} );
 	
 	it( "instruments nested conditional statement", () => {
-		verify(
+		verifyExpression(
 			Instrumentation(),
 			Code( "true?" ),
 			Code( "false?" ),
@@ -174,7 +139,7 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments logical statement nested in condition of conditional statement", () => {
-		verify(
+		verifyExpression(
 			Instrumentation(),
 			Expression( "false" ),
 			Code( "&&" ),
@@ -187,7 +152,7 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments logical statement nested in consequent side of conditional statement", () => {
-		verify(
+		verifyExpression(
 			Instrumentation(),
 			Code( "true?" ),
 			Expression( "false" ),
@@ -199,7 +164,7 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "instruments logical statement nested in alternate side of conditional statement", () => {
-		verify(
+		verifyExpression(
 			Instrumentation(),
 			Expression( "false" ),
 			Code( "&&" ),
@@ -281,4 +246,98 @@ function BlockFix() {
 		sourceCode: ";",
 		instrumentedCode: "{;}"
 	};
+}
+
+function verify( ...statements ) {
+	verifyProgram( compile( statements ) );
+}
+
+function verifyStatements( returnExpression, ...statements ) {
+	const program = compile( statements );
+	
+	verifyProgram( program );
+	
+	const expectation = new Function( `
+		${ program.sourceCode };
+		return ${ returnExpression };
+	` )();
+	
+	const reality = new Function( `
+		const __$cover = ( a, b ) => true;
+		${ program.instrumentedCode };
+		return ${ returnExpression };
+	` )();
+	
+	expect( expectation ).toEqual( reality );
+}
+
+function verifyExpression( ...statements ) {
+	const program = compile( statements );
+	
+	verifyProgram( program );
+	
+	const expectation = new Function( `
+		return ${ program.sourceCode };
+	` )();
+	
+	const instrumentedExpression = extractExpressionFromInstrumentedCode( program.instrumentedCode );
+	
+	const reality = new Function( `
+		const __$cover = ( a, b ) => true;
+		return ${ instrumentedExpression };
+	` )();
+	
+	expect( expectation ).toEqual( reality );
+}
+
+function extractExpressionFromInstrumentedCode( instrumentedCode ) {
+	const matches = /^__\$cover\(\d+,\d+\);(.*)/.exec( instrumentedCode );
+	
+	if( matches === null ) {
+		return instrumentedCode;
+	}
+	
+	return matches[ 1 ];
+}
+
+function compile( statements ) {
+	let sourceCode = "";
+	let instrumentedCode = "";
+	let numStatements = 0;
+	
+	for( const statement of statements ) {
+		sourceCode += statement.sourceCode;
+		instrumentedCode += statement.instrumentedCode;
+		if( statement.isCoverable ) {
+			numStatements++;
+		}
+	}
+	
+	return {
+		sourceCode,
+		instrumentedCode,
+		numStatements
+	};
+}
+
+function verifyProgram( { sourceCode, instrumentedCode, numStatements } ) {
+	const actualInstrumentedCode = instrumentCode( sourceCode, `test${fileIndex}.js`, coverageData );
+	
+	expect( actualInstrumentedCode ).toBe( instrumentedCode );
+	
+	const file = coverageData[ fileIndex ];
+	
+	expect( file.name ).toBe( `test${fileIndex}.js` );
+	expect( file.source ).toBe( sourceCode );
+	expect( file.statements ).toEqual( jasmine.any( Array ) );
+	expect( file.statements.length ).toBe( numStatements );
+	
+	let lastStatement = file.statements[ 0 ];
+	for( const statement of file.statements.slice( 1 ) ) {
+		expect( lastStatement.start.index ).not.toBeGreaterThan( statement.start.index );
+		lastStatement = statement;
+	}
+	
+	fileIndex++;
+	statementIndex = 0;
 }
