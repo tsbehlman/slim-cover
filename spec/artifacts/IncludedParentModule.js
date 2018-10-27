@@ -1,1 +1,0 @@
-const ChildModule = require( "./CoveredChildModule.js" );

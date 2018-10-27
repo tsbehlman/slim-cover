@@ -9,7 +9,7 @@ function checkModule( module ) {
 	}
 }
 
-module.exports = function( baseDir, coveredPaths ) {
+module.exports = function( options ) {
 	const runners = [
 		{
 			module: "jasmine",
@@ -19,7 +19,7 @@ module.exports = function( baseDir, coveredPaths ) {
 	];
 	
 	for( let runner of runners ) {
-		const specDir = baseDir + "/" + runner.specDir;
+		const specDir = options.project + "/" + runner.specDir;
 	
 		try {
 			fs.accessSync( specDir );
@@ -30,7 +30,7 @@ module.exports = function( baseDir, coveredPaths ) {
 		
 		checkModule( runner.module );
 		
-		require( `./${runner.adapter}Coverage.js` )( baseDir, specDir, coveredPaths );
+		require( `./${runner.adapter}Coverage.js` )( options.project, specDir, options );
 		break;
 	}
 }

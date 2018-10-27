@@ -1,20 +1,41 @@
 #!/usr/bin/env node
 
 const slimCover = require( "../src/shell" );
-const path = require( "path" );
+const { resolve } = require( "path" );
+const getArgs = require( "mri" );
 
-let baseDir = ".";
+const args = getArgs( process.argv.slice( 2 ) );
 
-if( process.argv.length > 2 ) {
-	baseDir = process.argv[ 2 ];
+function sanitizeStringArg( arg ) {
+	if( typeof arg === "string" ) {
+		return [ arg ];
+	}
+	
+	if( Array.isArray( arg ) ) {
+		return arg;
+	}
+	
+	return [];
 }
 
-baseDir = path.resolve( baseDir );
+const resolvePath = path => resolve( path );
 
-let coveredPaths = [ baseDir ];
+const options = {
+	project: sanitizeStringArg( args.project )[ 0 ],
+	includes: sanitizeStringArg( args.include ).map( resolvePath ),
+	excludes: sanitizeStringArg( args.exclude ).map( resolvePath )
+};
 
-if( process.argv.length > 3 ) {
-	coveredPaths = process.argv.slice( 3 ).map( ( coveredPath ) => path.resolve( coveredPath ) );
+if( options.project === undefined ) {
+	options.project = ".";
 }
 
-slimCover( baseDir, coveredPaths );
+options.project = resolve( options.project );
+options.includes = options.includes.map( resolvePath );
+options.excludes = options.excludes.map( resolvePath );
+
+if( options.includes.length === 0 ) {
+	options.includes.push( options.project );
+}
+
+slimCover( options );

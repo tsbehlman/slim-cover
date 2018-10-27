@@ -2,12 +2,19 @@ const Module = require( "module" );
 const fs = require( "fs" );
 const instrumentCode = require( "./Instrumenter" );
 
-module.exports = function( coverageData, coveredPaths ) {
+function hasPrefix( fileName ) {
+	return function( prefix ) {
+		return fileName.startsWith( prefix );
+	}
+}
+
+module.exports = function( coverageData, coverageOptions ) {
 	function instrumentJS( module, fileName ) {
 		module.coverageData = ( module.parent && module.parent.coverageData ) || coverageData;
-		module.coveredPaths = ( module.parent && module.parent.coveredPaths ) || coveredPaths;
+		module.coverageOptions = ( module.parent && module.parent.coverageOptions ) || coverageOptions;
 		let content = fs.readFileSync( fileName, "utf8" );
-		if( module.coveredPaths.some( ( coveredPath ) => fileName.startsWith( coveredPath ) ) ) {
+		const { includes, excludes } = module.coverageOptions;
+		if( includes.some( hasPrefix( fileName ) ) && !excludes.some( hasPrefix( fileName ) ) ) {
 			content = instrumentCode( content, fileName, module.coverageData );
 			content += "\n" + instrumentCode.CoverageUtilities;
 		}

@@ -12,6 +12,7 @@
   "dependencies": {
     "acorn": "^6.0.2",
     "line-scanner": "tsbehlman/line-scanner",
+    "mri": "^1.1.1",
     "ring-buffer": "tsbehlman/ring-buffer",
     "transformer": "tsbehlman/transformer",
     "traveler": "tsbehlman/traveler"
