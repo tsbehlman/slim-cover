@@ -175,10 +175,10 @@ module.exports = function( files, outputStream ) {
 		let shell = new NumberedShell( file, outputStream );
 		let data = shell.getFormattedCoverageData();
 		
-		//if( data.totalCoveredStatements < data.totalStatements ) {
+		if( data.totalCoveredStatements < data.totalStatements ) {
 			outputStream.write( file.name + "\n" );
 			outputStream.write( data.formattedSource );
-		//}
+		}
 		
 		numStatements += data.totalStatements;
 		numCoveredStatements += data.totalCoveredStatements;
