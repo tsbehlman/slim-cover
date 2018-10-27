@@ -23,7 +23,8 @@ const resolvePath = path => resolve( path );
 const options = {
 	project: sanitizeStringArg( args.project )[ 0 ],
 	includes: sanitizeStringArg( args.include ).map( resolvePath ),
-	excludes: sanitizeStringArg( args.exclude ).map( resolvePath )
+	excludes: sanitizeStringArg( args.exclude ).map( resolvePath ),
+	reporter: sanitizeStringArg( args.reporter )[ 0 ]
 };
 
 if( options.project === undefined ) {

@@ -1,8 +1,7 @@
 const Jasmine = require( "jasmine" );
 const Core = require( "../core" );
-const printCoverage = require( "./TerminalPrinter.js" );
 
-module.exports = function( baseDir, specDir, options ) {
+module.exports = function( baseDir, specDir, coverageData, options, generateReport ) {
 	const configFile = specDir + "/support/jasmine.json";
 	
 	const jasmine = new Jasmine( {
@@ -11,7 +10,6 @@ module.exports = function( baseDir, specDir, options ) {
 	
 	jasmine.loadConfigFile( configFile );
 	
-	const coverageData = [];
 	const requireForCoverage = Core( coverageData, options );
 	
 	Jasmine.prototype.loadSpecs = function() {
@@ -22,7 +20,7 @@ module.exports = function( baseDir, specDir, options ) {
 	
 	jasmine.onComplete( function( passed ) {
 		if( passed ) {
-			printCoverage( coverageData, process.stdout );
+			generateReport();
 		}
 	} );
 	
