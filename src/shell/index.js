@@ -22,7 +22,7 @@ module.exports = function( options ) {
 		if( reporterModule === undefined ) {
 			reporterModule = moduleNameForReporter.get( "terminal" );
 		}
-		require( reporterModule )( coverageData, process.stdout );
+		require( reporterModule )( coverageData, options.destination );
 	}
 	
 	const runners = [

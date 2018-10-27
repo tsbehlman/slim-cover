@@ -6,4 +6,4 @@ install:
   - npm ci
 after_success:
   - ./bin/slim-cover.js --reporter codecov > coverage.json
-  - codecov --file=codecov.json
+  - codecov --file=coverage.json
