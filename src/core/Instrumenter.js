@@ -68,7 +68,9 @@ function instrumentCode( source, fileName, coverageData ) {
 			break;
 		case "IfStatement":
 			normalizeBlockStatement( node.consequent, transformer );
-			normalizeBlockStatement( node.alternate, transformer );
+			if( node.alternate !== null && node.alternate.type !== "IfStatement" ) {
+				normalizeBlockStatement( node.alternate, transformer );
+			}
 			break;
 		case "WithStatement":
 		case "WhileStatement":

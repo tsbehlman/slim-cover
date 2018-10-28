@@ -77,19 +77,49 @@ describe( "Instrumenter", () => {
 	} );
 	
 	it( "adds missing braces to while", () => {
-		verify( Code( "while(false)" ), BlockFix() );
+		verify(
+			Code( "while(false)" ),
+			BlockFixStart(),
+			Statement( "true" ),
+			BlockFixEnd()
+		);
 	} );
 	
 	it( "adds missing braces to do-while", () => {
-		verify( Code( "do" ), BlockFix(), Code( "while( false );" ) );
+		verify(
+			Code( "do " ),
+			BlockFixStart(),
+			Statement( "true" ),
+			BlockFixEnd(),
+			Code( "while( false );" )
+		);
 	} );
 	
 	it( "adds missing braces to if", () => {
-		verify( Code( "if(false)" ), BlockFix() );
+		verify(
+			Code( "if(false)" ),
+			BlockFixStart(),
+			Statement( "true" ),
+			BlockFixEnd()
+		);
 	} );
 	
 	it( "adds missing braces to else", () => {
-		verify( Code( "if(false){}else" ), BlockFix() );
+		verify(
+			Code( "if(false){}else " ),
+			BlockFixStart(),
+			Statement( "true" ),
+			BlockFixEnd()
+		);
+	} );
+	
+	it( "adds missing braces to else if", () => {
+		verify(
+			Code( "if(false){}else if(true)" ),
+			BlockFixStart(),
+			Statement( "true" ),
+			BlockFixEnd()
+		);
 	} );
 	
 	it( "does not instrument variable declaration in for-of", () => {
@@ -241,10 +271,17 @@ function Expression( expression ) {
 	};
 }
 
-function BlockFix() {
+function BlockFixStart() {
+	return {
+		sourceCode: "",
+		instrumentedCode: "{"
+	};
+}
+
+function BlockFixEnd() {
 	return {
 		sourceCode: ";",
-		instrumentedCode: "{;}"
+		instrumentedCode: ";}"
 	};
 }
 
