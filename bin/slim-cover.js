@@ -51,4 +51,11 @@ options.reporters = options.reporters.map( reporter => {
 	return { name, destination };
 } );
 
+if( options.reporters.length === 0 ) {
+	options.reporters.push( {
+		name: "terminal",
+		destination: process.stdout
+	} );
+}
+
 slimCover( options );
