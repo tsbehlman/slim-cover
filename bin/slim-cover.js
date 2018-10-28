@@ -25,19 +25,11 @@ const options = {
 	project: sanitizeStringArg( args.project )[ 0 ],
 	includes: sanitizeStringArg( args.include ).map( resolvePath ),
 	excludes: sanitizeStringArg( args.exclude ).map( resolvePath ),
-	reporter: sanitizeStringArg( args.reporter )[ 0 ],
-	destination: sanitizeStringArg( args.destination )[ 0 ]
+	reporters: sanitizeStringArg( args.reporter )
 };
 
 if( options.project === undefined ) {
 	options.project = ".";
-}
-
-if( options.destination === undefined ) {
-	options.destination = process.stdout;
-}
-else {
-	options.destination = createWriteStream( options.destination );
 }
 
 options.project = resolve( options.project );
@@ -47,5 +39,16 @@ options.excludes = options.excludes.map( resolvePath );
 if( options.includes.length === 0 ) {
 	options.includes.push( options.project );
 }
+
+options.reporters = options.reporters.map( reporter => {
+	let [ name, destination ] = reporter.split( "," );
+	if( destination === undefined ) {
+		destination = process.stdout;
+	}
+	else {
+		destination = createWriteStream( destination );
+	}
+	return { name, destination };
+} );
 
 slimCover( options );

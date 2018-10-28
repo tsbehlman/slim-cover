@@ -18,11 +18,13 @@ module.exports = function( options ) {
 	const coverageData = [];
 	
 	function generateReport() {
-		let reporterModule = moduleNameForReporter.get( options.reporter );
-		if( reporterModule === undefined ) {
-			reporterModule = moduleNameForReporter.get( "terminal" );
+		for( const { name, destination } of options.reporters ) {
+			let reporterModule = moduleNameForReporter.get( name );
+			if( reporterModule === undefined ) {
+				reporterModule = moduleNameForReporter.get( "terminal" );
+			}
+			require( reporterModule )( coverageData, destination );
 		}
-		require( reporterModule )( coverageData, options.destination );
 	}
 	
 	const runners = [
