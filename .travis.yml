@@ -4,6 +4,7 @@ node_js:
 install:
   - npm install -g codecov
   - npm ci
+script:
+  - ./bin/slim-cover.js --include src --reporter terminal --reporter codecov,coverage.json
 after_success:
-  - ./bin/slim-cover.js --reporter codecov --destination coverage.json
   - codecov --file=coverage.json
