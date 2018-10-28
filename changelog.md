@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+- Files and directories can now be excluded by adding `--exclude <path>` on the command line.  Multiple excluded paths can be specified by repeating `--exclude` for each path.
+- A new reporter has been added to generate a JSON file compatible with [codecov.io](https://codecov.io).  Any number of reporters can be specified on the command line and the output can be configured to a file.  For example, to print coverage results in a human-readable manner to stdout and generate a codecov-compatible json file `coverage.json`, specify them like so: `slim-cover --reporter terminal --reporter codecov,coverage.json`.  By default the `terminal` reporter is used and its output is streamed to stdout.
+
+### Changed
+- The CLI now expects arguments to be named.  To set the project directory, use `--project <project>`.  To include a path, use `--include <path>`.  Multiple included paths can be specified by repeating `--include` for each path.  Both options consider the current working directory to be the default value.
+- The terminal reporter will now only print the names of files whose coverage is not 100%.
+
 ## [1.3.0] - 2018-10-15
 
 ### Changed
