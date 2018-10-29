@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "acorn": "^6.0.2",
-    "line-scanner": "tsbehlman/line-scanner",
+    "line-scanner": "github:tsbehlman/line-scanner",
     "mri": "^1.1.1",
-    "ring-buffer": "tsbehlman/ring-buffer",
-    "transformer": "tsbehlman/transformer",
-    "traveler": "tsbehlman/traveler"
+    "ring-buffer": "github:tsbehlman/ring-buffer",
+    "transformer": "github:tsbehlman/transformer",
+    "traveler": "github:tsbehlman/traveler"
   },
   "bin": {
     "slim-cover": "./bin/slim-cover.js"
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/tsbehlman/slim-cover#readme",
   "devDependencies": {
-    "jasmine": "^2.6.0",
+    "jasmine": ">=2.6.0",
     "mockery": "^2.1.0"
   }
 }
