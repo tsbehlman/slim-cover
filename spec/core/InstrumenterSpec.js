@@ -228,6 +228,15 @@ describe( "Instrumenter", () => {
 		);
 	} );
 	
+	it( "instruments arrow function body", () => {
+		verifyExpression(
+			Instrumentation(),
+			Code( "(() => " ),
+			Expression( "true" ),
+			Code( ")()" )
+		);
+	} );
+	
 	it( "considers only unique files", () => {
 		const coverageData = [];
 		instrumentCode( "", "test.js", coverageData );
