@@ -105,6 +105,9 @@ function instrumentCode( source, fileName, coverageData ) {
 				node.alternate.type += "Covered";
 			}
 			break;
+		case "ArrowFunctionExpression":
+			node.body.type += "Covered";
+			break;
 		}
 		
 		if( node.type.endsWith( "Covered" ) ) {
