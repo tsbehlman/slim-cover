@@ -47,3 +47,9 @@ By default, nothing is excluded.
 Specifies a type of reporter to be used to output coverage information as well as an optional file to output to.  This option can be used as many times as needed, for example `slim-cover --reporter terminal --reporter codecov,coverage.json`
 
 By default, the `terminal` reporter is outputted to stdout.  If a reporter is specified but not a destination, it is outputted to stdout.
+
+## Coverage for ES modules
+
+`slim-cover` can be combined with `jasmine` and `esm` to test code written using ES modules.  Add `esm` as a helper in your `jasmine.json` (`"../node_modules/esm"` worked for me) and set the `"esm"` field to your `package.json` to `{ "cache": false }`.
+
+Disabling this `esm` option is necessary because if `esm` caches your files before running `slim-cover` they will not be picked up when you run `slim-cover`.  Additionally, if `esm` caches your files while running `slim-cover`, you will get errors when not running `slim-cover` because it has not been initialized.
