@@ -10,9 +10,9 @@
     "coverage": "./bin/slim-cover.js . src"
   },
   "dependencies": {
-    "acorn": "^6.0.2",
+    "acorn": "^6.1.1",
     "line-scanner": "github:tsbehlman/line-scanner",
-    "mri": "^1.1.1",
+    "mri": "^1.1.4",
     "ring-buffer": "github:tsbehlman/ring-buffer",
     "transformer": "github:tsbehlman/transformer",
     "traveler": "github:tsbehlman/traveler"
@@ -32,8 +32,10 @@
     "url": "https://github.com/tsbehlman/slim-cover/issues"
   },
   "homepage": "https://github.com/tsbehlman/slim-cover#readme",
+  "peerDependencies": {
+    "jasmine": ">=2.6.0"
+  },
   "devDependencies": {
-    "jasmine": ">=2.6.0",
     "mockery": "^2.1.0"
   }
 }
