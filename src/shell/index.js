@@ -1,9 +1,5 @@
 const fs = require( "fs" );
-
-const moduleNameForReporter = new Map( [
-	[ "terminal", "./TerminalReporter.js" ],
-	[ "codecov", "./CodecovReporter.js" ]
-] );
+const configure = require( "./Configuration.js" );
 
 function checkModule( module ) {
 	try {
@@ -15,15 +11,13 @@ function checkModule( module ) {
 }
 
 module.exports = function( options ) {
+	options = configure( options );
+	
 	const coverageData = [];
 	
 	function generateReport() {
-		for( const { name, destination } of options.reporters ) {
-			let reporterModule = moduleNameForReporter.get( name );
-			if( reporterModule === undefined ) {
-				reporterModule = moduleNameForReporter.get( "terminal" );
-			}
-			require( reporterModule )( coverageData, destination );
+		for( const { module, destination } of options.reporters ) {
+			module( coverageData, destination );
 		}
 	}
 	
