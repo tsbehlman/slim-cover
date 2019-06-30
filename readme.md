@@ -8,14 +8,42 @@ Currently only supports Jasmine.
 
 ## Usage
 
-Run `slim-cover` to execute tests and print coverage information.
-
 ```
-slim-cover <project_dir> [<included_paths>...]
+slim-cover [...options]
 ```
 
-Executes tests within the given project directory.  For example, if your Jasmine `spec` folder is in a subdirectory called `dev`, run `slim-cover dev` to execute those tests.
+Executes tests and prints coverage information.  `slim-cover` will only report on coverage for files that are included by your test code and satisfy the configuration options.  If there are `.js` files in your configuration that are not imported by either your tests or the code under test, coverage for those files will not be reported.
 
-You may optionally specify any number of files and directories to monitor for coverage.  For example, `slim-cover . src/ index.js` will execute all tests in the current directory and report on code coverage for `index.js` all files under the `src` directory.  The current project directory is included if no paths are specified.
+### Options
 
-slim-cover will only report on coverage for files that are both within the configured source paths and included by your test code.  If there are source files in your chosen paths that are not imported by either your tests or the code under test, they will not be monitored.
+```
+--project <directory>
+```
+
+Sets the project directory in which to execute tests.  For example, if your Jasmine `spec` folder is in a subdirectory called `dev`, run `slim-cover --project dev` to execute those tests.
+
+By default, the current working directory is considered to be the project directory.
+
+```
+--include <file or directory>
+```
+
+Specifies a file or directory to include in the coverage report.  For example, `slim-cover --include index.js` will only report on code coverage for `index.js`, whereas `slim-cover --include src` will report on coverage for all `.js` files under the `src` directory.  This option can be used as many times as needed, for example `slim-cover --include index.js --include src`.
+
+By default, all `.js` files under the project directory are included.
+
+```
+--exclude <file or directory>
+```
+
+Specifies a file or directory to exclude from the coverage report.  For example, `slim-cover --exclude node_modules` will report on code coverage for all `.js` files under the project directory except for those found under the `node_modules` directory.  This option can be used as many times as needed, for example `slim-cover --exclude spec --exclude benchmark.js`.
+
+By default, nothing is excluded.
+
+```
+--reporter <type>[,<destination>]
+```
+
+Specifies a type of reporter to be used to output coverage information as well as an optional file to output to.  This option can be used as many times as needed, for example `slim-cover --reporter terminal --reporter codecov,coverage.json`
+
+By default, the `terminal` reporter is outputted to stdout.  If a reporter is specified but not a destination, it is outputted to stdout.
