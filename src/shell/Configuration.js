@@ -1,7 +1,7 @@
 const path = require( "path" );
 const { createWriteStream } = require( "fs" );
 
-const moduleNameForReporter = new Map( [
+const reporterLocationForType = new Map( [
 	[ "terminal", "./TerminalReporter.js" ],
 	[ "codecov", "./CodecovReporter.js" ]
 ] );
@@ -20,15 +20,15 @@ module.exports = function( { project = ".", includes = [], excludes = [], report
 
 	if( reporters.length === 0 ) {
 		reporters = [ {
-			name: "terminal",
-			module: require( moduleNameForReporter.get( "terminal" ) ),
+			type: "terminal",
+			reporter: require( reporterLocationForType.get( "terminal" ) ),
 			destination: process.stdout
 		} ];
 	}
 	else {
-		reporters = reporters.map( ( { name = "terminal", destination } ) => ( {
-			name,
-			module: require( moduleNameForReporter.get( name ) ),
+		reporters = reporters.map( ( { type = "terminal", destination } ) => ( {
+			type,
+			reporter: require( reporterLocationForType.get( type ) ),
 			destination: destination === undefined ? process.stdout : createWriteStream( destination )
 		} ) );
 	}

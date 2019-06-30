@@ -18,8 +18,8 @@ const options = {
 	includes: sanitizeStringArg( args.include ),
 	excludes: sanitizeStringArg( args.exclude ),
 	reporters: sanitizeStringArg( args.reporter ).map( reporter => {
-		const [ name, destination ] = reporter.split( "," );
-		return { name, destination };
+		const [ type, destination ] = reporter.split( "," );
+		return { type, destination };
 	} )
 };
 
