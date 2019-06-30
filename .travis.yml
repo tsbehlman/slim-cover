@@ -2,9 +2,9 @@ language: node_js
 node_js:
   - "node"
 install:
-  - npm install -g codecov
   - npm ci
+  - npm install codecov jasmine
 script:
   - ./bin/slim-cover.js --include src --reporter terminal --reporter codecov,coverage.json
 after_success:
-  - codecov --file=coverage.json
+  - npx codecov --file=coverage.json
