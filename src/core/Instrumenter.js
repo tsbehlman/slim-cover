@@ -106,7 +106,9 @@ function instrumentCode( source, fileName, coverageData ) {
 			}
 			break;
 		case "ArrowFunctionExpression":
-			node.body.type += "Covered";
+			if( node.body.type !== "BlockStatement" ) {
+				node.body.type += "Covered";
+			}
 			break;
 		}
 		

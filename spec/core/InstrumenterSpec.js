@@ -237,6 +237,15 @@ describe( "Instrumenter", () => {
 		);
 	} );
 	
+	it( "does not instrument arrow function block body", () => {
+		verifyExpression(
+			Instrumentation(),
+			Code( "(() => {" ),
+			Statement( "true" ),
+			Code( "})()" )
+		);
+	} );
+	
 	it( "considers only unique files", () => {
 		const coverageData = [];
 		instrumentCode( "", "test.js", coverageData );
