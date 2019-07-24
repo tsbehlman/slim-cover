@@ -282,6 +282,18 @@ describe( "Instrumenter", () => {
 		);
 	} );
 	
+	it( "allows import", () => {
+		verify( Code( "import foo from 'bar';" ) );
+	} );
+	
+	it( "allows named export for function", () => {
+		verify( Code( "export function test() {};" ) );
+	} );
+	
+	it( "allows named export for variable", () => {
+		verify( Code( "export const foo = 'bar';" ) );
+	} );
+	
 	it( "considers only unique files", () => {
 		const coverageData = [];
 		instrumentCode( "", "test.js", coverageData );

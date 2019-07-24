@@ -81,11 +81,11 @@ function instrumentCode( source, fileName, coverageData ) {
 		case "ForOfStatement":
 			normalizeBlockStatement( node.body, transformer );
 			if( node.type === "ForStatement" && node.init !== null ) {
-				node.init.type = "";
+				node.init.type += "Ignored";
 			}
 			else if( node.type === "ForInStatement" || node.type === "ForOfStatement" ) {
 				if( node.left.type === "VariableDeclaration" ) {
-					node.left.type = "";
+					node.left.type += "Ignored";
 				}
 			}
 			break;
@@ -119,6 +119,9 @@ function instrumentCode( source, fileName, coverageData ) {
 			transformer.writeAt( markStatementAsCovered(fileIndex, statementCounter) + ";", end );
 			addNodeToStatements( node, statements, statementCounter );
 			statementCounter++;
+			break;
+		case "ExportNamedDeclaration":
+			node.declaration.type += "Ignored";
 			break;
 		}
 		
