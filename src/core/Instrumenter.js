@@ -49,7 +49,7 @@ function instrumentCode( source, fileName, coverageData ) {
 
 	let ast = Acorn.parse( source, {
 		locations: true,
-		sourceType: "module"
+		allowImportExportEverywhere: true
 	} );
 
 	let transformer = new Transformer( source );

@@ -115,7 +115,7 @@ describe( "Instrumenter", () => {
 		verify(
 			Code( "do " ),
 			BlockFixStart(),
-			Statement( "true" ),
+			Statement( "true;" ),
 			BlockFixEnd(),
 			Code( "while( false );" )
 		);
@@ -144,6 +144,16 @@ describe( "Instrumenter", () => {
 			Code( "if(false){}else if(true)" ),
 			BlockFixStart(),
 			Statement( "true" ),
+			BlockFixEnd()
+		);
+	} );
+	
+	it( "adds missing braces to with", () => {
+		verify(
+			Statement( "var obj = { foo: 'bar' };" ),
+			Code( "with(obj)" ),
+			BlockFixStart(),
+			Statement( "foo;" ),
 			BlockFixEnd()
 		);
 	} );
@@ -324,8 +334,8 @@ function BlockFixStart() {
 
 function BlockFixEnd() {
 	return {
-		sourceCode: ";",
-		instrumentedCode: ";}"
+		sourceCode: "",
+		instrumentedCode: "}"
 	};
 }
 
