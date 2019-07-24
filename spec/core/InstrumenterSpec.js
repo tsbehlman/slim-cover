@@ -286,12 +286,30 @@ describe( "Instrumenter", () => {
 		verify( Code( "import foo from 'bar';" ) );
 	} );
 	
-	it( "allows named export for function", () => {
+	it( "allows export of function declaration", () => {
 		verify( Code( "export function test() {};" ) );
 	} );
 	
-	it( "allows named export for variable", () => {
+	it( "allows export of variable declaration", () => {
 		verify( Code( "export const foo = 'bar';" ) );
+	} );
+	
+	it( "allows default export of variable declaration", () => {
+		verify( Code( "export default foo = 'bar';" ) );
+	} );
+	
+	it( "allows export of predefined variable", () => {
+		verify(
+			Statement( "const foo = 'bar';" ),
+			Code( "export { foo };" )
+		);
+	} );
+	
+	it( "allows default export of predefined variable", () => {
+		verify(
+			Statement( "const foo = 'bar';" ),
+			Code( "export default foo;" )
+		);
 	} );
 	
 	it( "considers only unique files", () => {

@@ -121,7 +121,9 @@ function instrumentCode( source, fileName, coverageData ) {
 			statementCounter++;
 			break;
 		case "ExportNamedDeclaration":
-			node.declaration.type += "Ignored";
+			if (node.declaration !== null) {
+				node.declaration.type += "Ignored";
+			}
 			break;
 		}
 		
