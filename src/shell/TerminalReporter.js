@@ -12,7 +12,12 @@ function padLeft( pad, str ) {
 }
 
 function numDigits( num ) {
-	return Math.log10( num + 1 ) + 1 >>> 0;
+	if( num === 0 ) {
+		return 1;
+	}
+	else {
+		return Math.trunc( Math.log10( num ) + 1 );
+	}
 }
 
 const PRINT_NEAREST_LINES = 3;
