@@ -60,9 +60,35 @@ describe( "Instrumenter", () => {
 		);
 	} );
 	
-	it( "instruments a break statement", () => {
+	it( "instruments a switch case", () => {
 		verify(
 			Code( "switch('a'){case 'a':" ),
+			Instrumentation(),
+			Code( "}" )
+		);
+	} );
+	
+	it( "instruments a switch default", () => {
+		verify(
+			Code( "switch('a'){default:" ),
+			Instrumentation(),
+			Code( "}" )
+		);
+	} );
+	
+	it( "instruments a break statement in a default", () => {
+		verify(
+			Code( "switch('a'){default:" ),
+			Instrumentation(),
+			Statement( "break;" ),
+			Code( "}" )
+		);
+	} );
+	
+	it( "instruments a break statement in a case", () => {
+		verify(
+			Code( "switch('a'){case 'a':" ),
+			Instrumentation(),
 			Statement( "break;" ),
 			Code( "}" )
 		);

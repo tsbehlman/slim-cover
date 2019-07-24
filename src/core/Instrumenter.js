@@ -110,6 +110,16 @@ function instrumentCode( source, fileName, coverageData ) {
 				node.body.type += "Covered";
 			}
 			break;
+		case "SwitchCase":
+			let end = "default".length;
+			if(node.test !== null) {
+				end = node.test.end
+			}
+			end = source.indexOf( ":", end ) + 1;
+			transformer.writeAt( markStatementAsCovered(fileIndex, statementCounter) + ";", end );
+			addNodeToStatements( node, statements, statementCounter );
+			statementCounter++;
+			break;
 		}
 		
 		if( node.type.endsWith( "Covered" ) ) {
