@@ -1,6 +1,6 @@
 {
   "name": "slim-cover",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Barebones code coverage for JavaScript, in JavaScript",
   "main": "src/core/index.js",
   "author": "Trevor Behlman",

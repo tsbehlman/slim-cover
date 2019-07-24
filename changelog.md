@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.5.0] - 2019-07-24
+
 ### Added
 - Switch case and default statements are now instrumented so you can know which cases are covered.
 
@@ -67,7 +69,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Basic test coverage for [Jasmine](https://jasmine.github.io) tests
 
-[Unreleased]: https://github.com/tsbehlman/slim-cover/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/tsbehlman/slim-cover/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/tsbehlman/slim-cover/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/tsbehlman/slim-cover/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/tsbehlman/slim-cover/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/tsbehlman/slim-cover/compare/v1.2.0...v1.3.0
