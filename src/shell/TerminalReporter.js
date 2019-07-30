@@ -106,7 +106,7 @@ class NumberedShell {
 	}
 	
 	formatLineNumber( lineNumber ) {
-		let numberString = padLeft( this.lineNumberPadding, lineNumber.toString() );
+		let numberString = padLeft( this.lineNumberPadding, String( lineNumber ) );
 		return Invert + " " + numberString + " " + Reset;
 	}
 	
