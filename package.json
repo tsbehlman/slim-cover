@@ -11,18 +11,15 @@
   },
   "dependencies": {
     "acorn": "^6.1.1",
-    "line-scanner": "github:tsbehlman/line-scanner",
-    "mri": "^1.1.4",
-    "ring-buffer": "github:tsbehlman/ring-buffer",
-    "transformer": "github:tsbehlman/transformer",
-    "traveler": "github:tsbehlman/traveler"
+    "mri": "^1.1.4"
   },
   "bin": {
     "slim-cover": "./bin/slim-cover.js"
   },
   "files": [
     "src",
-    "bin"
+    "bin",
+    "lib"
   ],
   "repository": {
     "type": "git",
