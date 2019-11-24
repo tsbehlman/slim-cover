@@ -35,8 +35,10 @@ function addExpressionToStatements( node, fileIndex, statements, transformer ) {
 
 function instrumentCode( source, fileName, coverageData ) {
 	let statementCounter = 0;
-	let statements = [];
+	const statements = [];
 	let fileIndex = coverageData.findIndex( file => file.name === fileName );
+	const nodesToIgnore = new Set();
+	const expressionsToCover = new Set();
 
 	if( fileIndex < 0 ) {
 		fileIndex = coverageData.length;
@@ -54,7 +56,18 @@ function instrumentCode( source, fileName, coverageData ) {
 
 	let transformer = new Transformer( source );
 
-	for( let node of new Traveler( ast ) ) {
+	for( const node of new Traveler( ast ) ) {
+		if( nodesToIgnore.has( node ) ) {
+			nodesToIgnore.delete( node )
+			continue;
+		}
+		
+		if( expressionsToCover.has( node ) ) {
+			expressionsToCover.delete( node );
+			addExpressionToStatements( node, fileIndex, statements, transformer );
+			statementCounter++;
+		}
+		
 		switch( node.type ) {
 		case "ExpressionStatement":
 		case "DebuggerStatement":
@@ -81,33 +94,33 @@ function instrumentCode( source, fileName, coverageData ) {
 		case "ForOfStatement":
 			normalizeBlockStatement( node.body, transformer );
 			if( node.type === "ForStatement" && node.init !== null ) {
-				node.init.type += "Ignored";
+				nodesToIgnore.add( node.init );
 			}
 			else if( node.type === "ForInStatement" || node.type === "ForOfStatement" ) {
 				if( node.left.type === "VariableDeclaration" ) {
-					node.left.type += "Ignored";
+					nodesToIgnore.add( node.left );
 				}
 			}
 			break;
 		case "LogicalExpression":
 			if( !nestedExpressionTypes.has( node.left.type ) ) {
-				node.left.type += "Covered";
+				expressionsToCover.add( node.left );
 			}
 			if( !nestedExpressionTypes.has( node.right.type ) ) {
-				node.right.type += "Covered";
+				expressionsToCover.add( node.right );
 			}
 			break;
 		case "ConditionalExpression":
 			if( !nestedExpressionTypes.has( node.consequent.type ) ) {
-				node.consequent.type += "Covered";
+				expressionsToCover.add( node.consequent );
 			}
 			if( !nestedExpressionTypes.has( node.alternate.type ) ) {
-				node.alternate.type += "Covered";
+				expressionsToCover.add( node.alternate );
 			}
 			break;
 		case "ArrowFunctionExpression":
 			if( node.body.type !== "BlockStatement" ) {
-				node.body.type += "Covered";
+				expressionsToCover.add( node.body );
 			}
 			break;
 		case "SwitchCase":
@@ -122,14 +135,9 @@ function instrumentCode( source, fileName, coverageData ) {
 			break;
 		case "ExportNamedDeclaration":
 			if (node.declaration !== null) {
-				node.declaration.type += "Ignored";
+				nodesToIgnore.add( node.declaration );
 			}
 			break;
-		}
-		
-		if( node.type.endsWith( "Covered" ) ) {
-			addExpressionToStatements( node, fileIndex, statements, transformer );
-			statementCounter++;
 		}
 	}
 
