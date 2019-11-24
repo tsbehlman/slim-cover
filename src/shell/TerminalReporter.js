@@ -36,6 +36,7 @@ class NumberedShell {
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
 		this.linesToPrint = 0;
 		this.additionalLinesUncovered = 0;
+		this.lastOutputtedLineNumber = NaN;
 	}
 	
 	getLineNumberDigits() {
@@ -90,7 +91,15 @@ class NumberedShell {
 		}
 	}
 	
+	outputBreakLine() {
+		this.output += Invert + " " + padLeft( this.lineNumberPadding, "---" ) + " " + Reset + "\n";
+	}
+	
 	outputLine( line ) {
+		if( line.number > this.lastOutputtedLineNumber + 1 ) {
+			this.outputBreakLine();
+		}
+		
 		this.output += this.formatLineNumber( line.number );
 		
 		this.output += " ";
@@ -98,6 +107,8 @@ class NumberedShell {
 		this.output += this.formatLine( line.source, line.coverage );
 		
 		this.output += "\n";
+		
+		this.lastOutputtedLineNumber = line.number;
 	}
 	
 	shouldOutputLine( lineCoverage ) {
