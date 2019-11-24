@@ -8,19 +8,40 @@ module.exports = function( coverageData, options, outputStream ) {
 		
 		let statementIndex = 0;
 		
+		const multilineStatements = new Set();
+		
 		while( statementIndex < file.statements.length ) {
 			let numStatements = 0;
 			let numCoveredStatements = 0;
 			
-			for( ; statementIndex < file.statements.length; statementIndex++ ) {
-				const statement = file.statements[ statementIndex ];
+			for( const statement of multilineStatements ) {
+				if( statement.end.line >= lines.length ) {
+					numStatements++;
+					
+					if( statement.isCovered ) {
+						numCoveredStatements++;
+					}
+				}
+				else {
+					multilineStatements.delete( statement );
+				}
+			}
 			
-				if( statement.start.line !== lines.length ) {
+			while( statementIndex < file.statements.length ) {
+				const statement = file.statements[ statementIndex ];
+				
+				if( statement.start.line > lines.length ) {
 					break;
 				}
-			
+				
+				if( statement.end.line > statement.start.line ) {
+					multilineStatements.add( statement );
+				}
+				
+				statementIndex++
+				
 				numStatements++;
-			
+				
 				if( statement.isCovered ) {
 					numCoveredStatements++;
 				}

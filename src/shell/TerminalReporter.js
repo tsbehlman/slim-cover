@@ -35,8 +35,9 @@ class NumberedShell {
 		this.output = "";
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
 		this.linesToPrint = 0;
-		this.additionalLinesUncovered = 0;
 		this.lastOutputtedLineNumber = NaN;
+		
+		this.multilineStatements = new Set();
 	}
 	
 	getLineNumberDigits() {
@@ -70,7 +71,7 @@ class NumberedShell {
 	}
 	
 	outputOrBufferLine( line ) {
-		if( this.shouldOutputLine( line.coverage ) ) {
+		if( line.coverage.numCoveredStatements < line.coverage.numStatements ) {
 			while( this.lineBuffer.length > 0 ) {
 				this.outputLine( this.lineBuffer.removeFirst() );
 			}
@@ -111,12 +112,6 @@ class NumberedShell {
 		this.lastOutputtedLineNumber = line.number;
 	}
 	
-	shouldOutputLine( lineCoverage ) {
-		if( this.additionalLinesUncovered > 0 || lineCoverage.numCoveredStatements < lineCoverage.numStatements ) {
-			return true;
-		}
-	}
-	
 	formatLineNumber( lineNumber ) {
 		let numberString = padLeft( this.lineNumberPadding, String( lineNumber ) );
 		return Invert + " " + numberString + " " + Reset;
@@ -127,12 +122,7 @@ class NumberedShell {
 		
 		let lineIsColored = false;
 		
-		if( this.additionalLinesUncovered > 0 ) {
-			lineIsColored = true;
-			formattedLine += FgRed;
-			this.additionalLinesUncovered--;
-		}
-		else if( lineCoverage.numStatements > 0 ) {
+		if( lineCoverage.numStatements > 0 ) {
 			lineIsColored = true;
 			if( lineCoverage.numCoveredStatements === lineCoverage.numStatements ) {
 				formattedLine += FgGreen;
@@ -160,26 +150,42 @@ class NumberedShell {
 		let numStatements = 0;
 		let numCoveredStatements = 0;
 		
-		for( ; this.statementIndex < this.statements.length; this.statementIndex++ ) {
-			let statement = this.statements[ this.statementIndex ];
+		for( const statement of this.multilineStatements ) {
+			if( statement.end.line >= lineNumber ) {
+				numStatements++;
+				
+				if( statement.isCovered ) {
+					numCoveredStatements++;
+				}
+			}
+			else {
+				this.multilineStatements.delete( statement );
+			}
+		}
+		
+		while( this.statementIndex < this.statements.length ) {
+			const statement = this.statements[ this.statementIndex ];
 			
-			if( statement.start.line !== lineNumber ) {
+			if( statement.start.line > lineNumber ) {
 				break;
 			}
+			
+			if( statement.end.line > statement.start.line ) {
+				this.multilineStatements.add( statement );
+			}
+			
+			this.statementIndex++
 			
 			numStatements++;
 			
 			if( statement.isCovered ) {
 				numCoveredStatements++;
 			}
-			else if( statement.end.line !== lineNumber ) {
-				this.additionalLinesUncovered += statement.end.line - statement.start.line + 1;
-			}
 		}
 		
 		return {
-			numCoveredStatements: numCoveredStatements,
-			numStatements: numStatements
+			numCoveredStatements,
+			numStatements
 		};
 	}
 }
