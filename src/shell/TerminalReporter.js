@@ -1,3 +1,4 @@
+const { relative } = require( "path" );
 const LineScanner = require( "../../lib/line-scanner" );
 const RingBuffer = require( "../../lib/ring-buffer" );
 
@@ -172,16 +173,17 @@ class NumberedShell {
 	}
 }
 
-module.exports = function( files, outputStream ) {
+module.exports = function( coverageData, options, outputStream ) {
 	let numStatements = 0;
 	let numCoveredStatements = 0;
 	
-	for( let file of files ) {
-		let shell = new NumberedShell( file, outputStream );
-		let data = shell.getFormattedCoverageData();
+	for( const file of coverageData ) {
+		const shell = new NumberedShell( file, outputStream );
+		const data = shell.getFormattedCoverageData();
 		
 		if( data.totalCoveredStatements < data.totalStatements ) {
-			outputStream.write( file.name + "\n" );
+			const fileName = relative( options.project, file.name );
+			outputStream.write( fileName + "\n" );
 			outputStream.write( data.formattedSource );
 		}
 		
@@ -190,7 +192,7 @@ module.exports = function( files, outputStream ) {
 	}
 	
 	if( numCoveredStatements < numStatements ) {
-		let percentage = ( numCoveredStatements * 100 / numStatements ).toFixed( 1 );
+		const percentage = ( numCoveredStatements * 100 / numStatements ).toFixed( 1 );
 		outputStream.write( "\nCovered " + numCoveredStatements.toLocaleString() +
 			" of " + numStatements.toLocaleString() + " statements (" + percentage + "%)\n" );
 	}

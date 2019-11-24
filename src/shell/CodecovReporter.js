@@ -1,4 +1,6 @@
-module.exports = function( coverageData, outputStream ) {
+const { relative } = require( "path" );
+
+module.exports = function( coverageData, options, outputStream ) {
 	const coverage = {};
 	
 	for( const file of coverageData ) {
@@ -38,7 +40,8 @@ module.exports = function( coverageData, outputStream ) {
 			}
 		}
 		
-		coverage[ file.name ] = lines;
+		const fileName = relative( options.project, file.name );
+		coverage[ fileName ] = lines;
 	}
 	
 	outputStream.write( JSON.stringify( { coverage } ) );

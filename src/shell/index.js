@@ -17,7 +17,7 @@ module.exports = function( options ) {
 	
 	function generateReport() {
 		for( const { reporter, destination } of options.reporters ) {
-			reporter( coverageData, destination );
+			reporter( coverageData, options, destination );
 		}
 	}
 	
