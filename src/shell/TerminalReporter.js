@@ -183,7 +183,7 @@ module.exports = function( coverageData, options, outputStream ) {
 		
 		if( data.totalCoveredStatements < data.totalStatements ) {
 			const fileName = relative( options.project, file.name );
-			outputStream.write( fileName + "\n" );
+			outputStream.write( `${ Invert } ${ fileName } ${ Reset }\n` );
 			outputStream.write( data.formattedSource );
 		}
 		
