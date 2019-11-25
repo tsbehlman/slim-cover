@@ -125,12 +125,22 @@ function instrumentCode( source, fileName, coverageData ) {
 			break;
 		case "SwitchCase":
 			let end = "default".length;
-			if(node.test !== null) {
+			if( node.test !== null ) {
 				end = node.test.end
 			}
 			end = source.indexOf( ":", end ) + 1;
 			transformer.writeAt( markStatementAsCovered(fileIndex, statementCounter) + ";", end );
-			addNodeToStatements( node, statements, statementCounter );
+			addNodeToStatements( {
+				start: node.start,
+				end: end,
+				loc: {
+					start: node.loc.start,
+					end: {
+						line: node.loc.start.line,
+						column: node.loc.start.column + end - node.start
+					}
+				}
+			}, statements, statementCounter );
 			statementCounter++;
 			break;
 		case "ExportNamedDeclaration":

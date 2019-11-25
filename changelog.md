@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - File names in the output of both the terminal and codecov reporters will now be displayed as relative paths based on the project directory.
 - File names in the terminal reporter will now be formatted similarly to line numbers in order to stick out more.
+- Switch case statements will now only count coverage toward the case itself rather than including the body of statements in the case.  This avoids lines within cases that have no coverage appearing as if they have partial coverage.
 
 ### Fixed
 - Fixed issues with calculating line coverage when dealing with expressions or statements covering multiple lines in both reporters
