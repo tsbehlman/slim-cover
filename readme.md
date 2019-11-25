@@ -7,6 +7,8 @@ Barebones code coverage for JavaScript, in JavaScript.
 
 Currently only supports Jasmine.
 
+<img src="screenshot.png" alt="A screenshot of slim-cover's terminal output for an example project" width="550">
+
 ## Usage
 
 ```
