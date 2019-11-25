@@ -1,6 +1,7 @@
 const { relative } = require( "path" );
 const LineScanner = require( "../../lib/line-scanner" );
 const RingBuffer = require( "../../lib/ring-buffer" );
+const lineCoverageConverter = require( "./lineCoverageConverter" );
 
 const Reset = "\x1b[0m";
 const Invert = "\x1b[7m";
@@ -26,8 +27,7 @@ const PRINT_NEAREST_LINES = 3;
 class NumberedShell {
 	constructor( coverageData ) {
 		this.source = coverageData.source;
-		this.statements = coverageData.statements;
-		this.statementIndex = 0;
+		this.lineCoverage = lineCoverageConverter( coverageData.statements );
 		
 		this.lineNumberDigits = this.getLineNumberDigits();
 		this.lineNumberPadding = " ".repeat( this.lineNumberDigits );
@@ -36,12 +36,10 @@ class NumberedShell {
 		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
 		this.linesToPrint = 0;
 		this.lastOutputtedLineNumber = NaN;
-		
-		this.multilineStatements = new Set();
 	}
 	
 	getLineNumberDigits() {
-		return numDigits( this.statements[ this.statements.length - 1 ].end.line );
+		return numDigits( this.lineCoverage.length - 1 );
 	}
 	
 	getFormattedCoverageData() {
@@ -49,11 +47,11 @@ class NumberedShell {
 		let totalStatements = 0;
 		let totalCoveredStatements = 0;
 		
-		for( let lineSource of new LineScanner( this.source ) ) {
-			let line = {
+		for( const lineSource of new LineScanner( this.source ) ) {
+			const line = {
 				source: lineSource,
 				number: lineNumber,
-				coverage: this.getLineCoverage( lineNumber )
+				coverage: this.lineCoverage[ lineNumber ]
 			};
 			
 			this.outputOrBufferLine( line );
@@ -144,49 +142,6 @@ class NumberedShell {
 		}
 		
 		return formattedLine;
-	}
-	
-	getLineCoverage( lineNumber ) {
-		let numStatements = 0;
-		let numCoveredStatements = 0;
-		
-		for( const statement of this.multilineStatements ) {
-			if( statement.end.line >= lineNumber ) {
-				numStatements++;
-				
-				if( statement.isCovered ) {
-					numCoveredStatements++;
-				}
-			}
-			else {
-				this.multilineStatements.delete( statement );
-			}
-		}
-		
-		while( this.statementIndex < this.statements.length ) {
-			const statement = this.statements[ this.statementIndex ];
-			
-			if( statement.start.line > lineNumber ) {
-				break;
-			}
-			
-			if( statement.end.line > statement.start.line ) {
-				this.multilineStatements.add( statement );
-			}
-			
-			this.statementIndex++
-			
-			numStatements++;
-			
-			if( statement.isCovered ) {
-				numCoveredStatements++;
-			}
-		}
-		
-		return {
-			numCoveredStatements,
-			numStatements
-		};
 	}
 }
 
