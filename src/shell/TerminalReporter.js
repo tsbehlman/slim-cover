@@ -91,7 +91,7 @@ class NumberedShell {
 	}
 	
 	outputBreakLine() {
-		this.output += Invert + " " + padLeft( this.lineNumberPadding, "---" ) + " " + Reset + "\n";
+		this.output += this.formatGutter( "---" ) + "\n";
 	}
 	
 	outputLine( line ) {
@@ -103,19 +103,22 @@ class NumberedShell {
 		
 		this.output += " ";
 		
-		this.output += this.formatLine( line.source, line.coverage );
+		this.output += this.formatLineSource( line.source, line.coverage );
 		
 		this.output += "\n";
 		
 		this.lastOutputtedLineNumber = line.number;
 	}
 	
-	formatLineNumber( lineNumber ) {
-		const numberString = padLeft( this.lineNumberPadding, String( lineNumber ) );
-		return Invert + " " + numberString + " " + Reset;
+	formatGutter( gutterText ) {
+		return `${ Invert } ${ padLeft( this.lineNumberPadding, gutterText ) } ${ Reset }`;
 	}
 	
-	formatLine( line, lineCoverage ) {
+	formatLineNumber( lineNumber ) {
+		return this.formatGutter( String( lineNumber ) );
+	}
+	
+	formatLineSource( lineSource, lineCoverage ) {
 		let formattedLine = "";
 		
 		let lineIsColored = false;
@@ -133,7 +136,7 @@ class NumberedShell {
 			}
 		}
 		
-		formattedLine += line.replace( /^\t+/, ( tabs ) => {
+		formattedLine += lineSource.replace( /^\t+/, ( tabs ) => {
 			return "    ".repeat( tabs.length );
 		} );
 		
