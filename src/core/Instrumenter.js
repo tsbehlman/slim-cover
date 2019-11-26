@@ -49,12 +49,12 @@ function instrumentCode( source, fileName, coverageData ) {
 		} );
 	}
 
-	let ast = Acorn.parse( source, {
+	const ast = Acorn.parse( source, {
 		locations: true,
 		allowImportExportEverywhere: true
 	} );
 
-	let transformer = new Transformer( source );
+	const transformer = new Transformer( source );
 
 	for( const node of new Traveler( ast ) ) {
 		if( nodesToIgnore.has( node ) ) {

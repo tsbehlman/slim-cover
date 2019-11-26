@@ -111,7 +111,7 @@ class NumberedShell {
 	}
 	
 	formatLineNumber( lineNumber ) {
-		let numberString = padLeft( this.lineNumberPadding, String( lineNumber ) );
+		const numberString = padLeft( this.lineNumberPadding, String( lineNumber ) );
 		return Invert + " " + numberString + " " + Reset;
 	}
 	

@@ -29,7 +29,7 @@ module.exports = function( options ) {
 		}
 	];
 	
-	for( let runner of runners ) {
+	for( const runner of runners ) {
 		const specDir = options.project + "/" + runner.specDir;
 	
 		try {
