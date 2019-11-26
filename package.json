@@ -10,7 +10,8 @@
     "coverage": "./bin/slim-cover.js"
   },
   "dependencies": {
-    "acorn": "^6.1.1",
+    "acorn": "^7.1.0",
+    "jasmine": ">=2.6.0",
     "mri": "^1.1.4"
   },
   "bin": {
@@ -29,9 +30,6 @@
     "url": "https://github.com/tsbehlman/slim-cover/issues"
   },
   "homepage": "https://github.com/tsbehlman/slim-cover#readme",
-  "peerDependencies": {
-    "jasmine": ">=2.6.0"
-  },
   "devDependencies": {
     "mockery": "^2.1.0"
   }
