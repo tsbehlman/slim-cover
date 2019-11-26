@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jasmine",
-    "coverage": "./bin/slim-cover.js --include src"
+    "coverage": "./bin/slim-cover.js"
   },
   "dependencies": {
     "acorn": "^6.1.1",
