@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Options may now be specified via config file.  See the updated readme for more details.
 - The terminal reporter now has a configurable option `numContextLines`.  See the updated readme for more details.
+- A custom reporter may now be configured.  See the updated readme for more details.
 
 ### Changed
 - File names in the output of both the terminal and codecov reporters will now be displayed as relative paths based on the project directory.

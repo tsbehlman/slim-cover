@@ -34,6 +34,10 @@ module.exports = function( { project = ".", includes = [], excludes = [], report
 
 function makeReporter( { type = "terminal", options = {}, destination } ) {
 	let reporterLocation = reporterLocationForType.get( type );
+	if( reporterLocation === undefined ) {
+		reporterLocation = path.resolve( type );
+	}
+	
 	let destinationStream = process.stdout;
 	if( destination !== undefined ) {
 		destinationStream = createWriteStream( destination );

@@ -49,7 +49,9 @@ By default, nothing is excluded.
 
 Specifies a reporter to be used to output coverage information as well as an optional file to output to.  This option can be used as many times as needed, for example `slim-cover --reporter terminal --reporter codecov,coverage.json`.  Options for each reporter can only be specified via config file.
 
-By default, the `terminal` reporter is outputted to stdout.  If a reporter is specified but not a destination, it is outputted to stdout.
+`<type>` may either be the name of one of the built-in reporters or a path to a JS module which exports a custom reporter.  See the [Reporters](#reporters) section for more details.
+
+By default, the `terminal` reporter is outputted to stdout.  If a reporter is specified without a destination, it is outputted to stdout.
 
 ```
 --config <file>
@@ -94,6 +96,16 @@ The default reporter, which can be specified as `terminal` in your configuration
 #### Codecov
 
 An optional reporter which can be used to create a report compatible with [codecov.io](https://codecov.io).  Can be specified as `codecov` in your configuration.
+
+#### Custom reporters
+
+In place of any of the above built-in reporters, a path to any JS module can be specified in your configuration to be used as a reporter.  Example reporter module:
+
+```javascript
+module.exports = function( coverageData, project, options, outputStream ) {
+    // ...
+};
+```
 
 ## Coverage for ES modules
 
