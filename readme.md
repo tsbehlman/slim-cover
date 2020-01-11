@@ -47,7 +47,7 @@ By default, nothing is excluded.
 --reporter <type>[,<destination>]
 ```
 
-Specifies a type of reporter to be used to output coverage information as well as an optional file to output to.  This option can be used as many times as needed, for example `slim-cover --reporter terminal --reporter codecov,coverage.json`
+Specifies a reporter to be used to output coverage information as well as an optional file to output to.  This option can be used as many times as needed, for example `slim-cover --reporter terminal --reporter codecov,coverage.json`.  Options for each reporter can only be specified via config file.
 
 By default, the `terminal` reporter is outputted to stdout.  If a reporter is specified but not a destination, it is outputted to stdout.
 
@@ -59,7 +59,7 @@ Specifies the location of an optional configuration file.  By default, `slim-cov
 
 ### Config file options
 
-The same options may be specified via a configuration file.  When running `slim-cover` via command line it will use any file called `.slim-cover.json` in the current directory if it exists.
+Options may also be specified via a configuration file.  When running `slim-cover` via command line it will use any file called `.slim-cover.json` in the current directory if it exists.
 
 Here's an example with comments detailing the equivalent command line options described above:
 
@@ -74,12 +74,26 @@ Here's an example with comments detailing the equivalent command line options de
     ],
     "reporters": [
         {
-            "type": "codecov",
-            "destination": "coverage.json"
-        } // --reporter codecov,coverage.json
+            "type": "terminal",
+            "destination": "coverage.txt",
+            "options": {
+                "numContextLines": 2
+            }
+        } // --reporter terminal,coverage.txt
     ]
 }
 ```
+
+<a name="reporters"></a>
+### Reporters
+
+#### Terminal
+
+The default reporter, which can be specified as `terminal` in your configuration.  The number of lines adjacent to lines without full coverage is configurable as `numConextLines` in this reporter's `options`.
+
+#### Codecov
+
+An optional reporter which can be used to create a report compatible with [codecov.io](https://codecov.io).  Can be specified as `codecov` in your configuration.
 
 ## Coverage for ES modules
 

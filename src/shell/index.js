@@ -16,8 +16,8 @@ module.exports = function( options ) {
 	const coverageData = [];
 	
 	function generateReport() {
-		for( const { reporter, destination } of options.reporters ) {
-			reporter( coverageData, options, destination );
+		for( const { reporter, options: reporterOptions, destination } of options.reporters ) {
+			reporter( coverageData, options.project, reporterOptions, destination );
 		}
 	}
 	

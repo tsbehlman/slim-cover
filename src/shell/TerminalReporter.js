@@ -22,18 +22,21 @@ function numDigits( num ) {
 	}
 }
 
-const PRINT_NEAREST_LINES = 3;
-
 class NumberedShell {
-	constructor( coverageData ) {
+	constructor( coverageData, options ) {
 		this.source = coverageData.source;
 		this.lineCoverage = lineCoverageConverter( coverageData.statements );
 		
 		this.lineNumberDigits = this.getLineNumberDigits();
 		this.lineNumberPadding = " ".repeat( this.lineNumberDigits );
 		
+		this.options = {
+			numContextLines: 3,
+			...options
+		};
+		
 		this.output = "";
-		this.lineBuffer = new RingBuffer( PRINT_NEAREST_LINES );
+		this.lineBuffer = new RingBuffer( this.options.numContextLines );
 		this.linesToPrint = 0;
 		this.lastOutputtedLineNumber = NaN;
 	}
@@ -74,7 +77,7 @@ class NumberedShell {
 				this.outputLine( this.lineBuffer.removeFirst() );
 			}
 			
-			this.linesToPrint = PRINT_NEAREST_LINES;
+			this.linesToPrint = this.options.numContextLines;
 			
 			this.outputLine( line );
 		}
@@ -83,7 +86,7 @@ class NumberedShell {
 			this.linesToPrint--;
 		}
 		else {
-			if( this.lineBuffer.length === PRINT_NEAREST_LINES ) {
+			if( this.lineBuffer.length === this.options.numContextLines ) {
 				this.lineBuffer.removeFirst();
 			}
 			this.lineBuffer.addLast( line );
@@ -148,16 +151,16 @@ class NumberedShell {
 	}
 }
 
-module.exports = function( coverageData, options, outputStream ) {
+module.exports = function( coverageData, project, options, outputStream ) {
 	let numStatements = 0;
 	let numCoveredStatements = 0;
 	
 	for( const file of coverageData ) {
-		const shell = new NumberedShell( file, outputStream );
+		const shell = new NumberedShell( file, options );
 		const data = shell.getFormattedCoverageData();
 		
 		if( data.totalCoveredStatements < data.totalStatements ) {
-			const fileName = relative( options.project, file.name );
+			const fileName = relative( project, file.name );
 			outputStream.write( `${ Invert } ${ fileName } ${ Reset }\n` );
 			outputStream.write( data.formattedSource );
 		}

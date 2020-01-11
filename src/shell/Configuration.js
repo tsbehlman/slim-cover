@@ -19,19 +19,10 @@ module.exports = function( { project = ".", includes = [], excludes = [], report
 	excludes = excludes.map( exclude => path.resolve( exclude ) );
 
 	if( reporters.length === 0 ) {
-		reporters = [ {
-			type: "terminal",
-			reporter: require( reporterLocationForType.get( "terminal" ) ),
-			destination: process.stdout
-		} ];
+		reporters = [ {} ];
 	}
-	else {
-		reporters = reporters.map( ( { type = "terminal", destination } ) => ( {
-			type,
-			reporter: require( reporterLocationForType.get( type ) ),
-			destination: destination === undefined ? process.stdout : createWriteStream( destination )
-		} ) );
-	}
+	
+	reporters = reporters.map( makeReporter );
 
 	return {
 		project,
@@ -40,3 +31,18 @@ module.exports = function( { project = ".", includes = [], excludes = [], report
 		reporters
 	};
 };
+
+function makeReporter( { type = "terminal", options = {}, destination } ) {
+	let reporterLocation = reporterLocationForType.get( type );
+	let destinationStream = process.stdout;
+	if( destination !== undefined ) {
+		destinationStream = createWriteStream( destination );
+	}
+	
+	return {
+		type,
+		reporter: require( reporterLocation ),
+		options,
+		destination: destinationStream
+	};
+}
