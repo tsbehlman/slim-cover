@@ -9,18 +9,16 @@ module.exports = function( coverageData, project, options, outputStream ) {
 		coverage[ fileName ] = lineCoverageConverter( file.statements )
 			.map( line => {
 				const { numStatements = 0, numCoveredStatements = 0 } = line || {};
+				let coverage = numCoveredStatements;
+				
 				if( numStatements === 0 ) {
-					return null;
+					coverage = null;
 				}
-				else if( numCoveredStatements === numStatements ) {
-					return numStatements;
+				else if( numCoveredStatements !== numStatements ) {
+					coverage += "/" + numStatements;
 				}
-				else if( numCoveredStatements === 0 ) {
-					return 0;
-				}
-				else {
-					return numCoveredStatements + "/" + numStatements;
-				}
+				
+				return coverage;
 			} );
 	}
 	
